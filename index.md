@@ -1,4 +1,4 @@
-**Exercise 3: ODD Analysis 2**
+**ODD Analysis 2**
 
 And further analysis for ODD (Otomotiv Distribütörleri Derneği) data has been done. In order to aggregate monthly ODD data, we merged our code to main file.
 
@@ -10,7 +10,7 @@ And further analysis for ODD (Otomotiv Distribütörleri Derneği) data has been
 
 ***
 
-**Exercise 2: ODD Analysis 1**
+**ODD Analysis 1**
 
 This development consists of library(tidyverse),library(readxl) functions. By using these functions, ODD (Otomotiv Distribütörleri Derneği) data of 2016,10 was analyzed.
 
@@ -24,7 +24,7 @@ This development consists of library(tidyverse),library(readxl) functions. By us
 
 ***
 ## WHY R
-**Exercise 1: R Experiences**
+**R Experiences**
 
 [Click here](R/Exercise1/RMarkdown-Homework-Rexamples_Assignment1.html) My R Experiences and Importance of R.
 
@@ -34,7 +34,7 @@ This development consists of library(tidyverse),library(readxl) functions. By us
 
 ***
 
-### Exercise 0: Welcome to GitHub Pages
+### Welcome to GitHub Pages
 
 [Website on GitHub](C:\Users\Kafein\Documents\github2\DATALOVERVIZUALIZER\LEYLAS_REPO_BIGDATA/index.md) to maintain and preview the content for the website in Markdown files.
 
