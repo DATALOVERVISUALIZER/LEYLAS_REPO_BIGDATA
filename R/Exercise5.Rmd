@@ -1,5 +1,5 @@
 ---
-title: "311802034_Leyla_Yiğit_STAT_Final"
+title: "311802034_Leyla_Yiğit_STATATISTICS"
 output: html_document
 ---
 
