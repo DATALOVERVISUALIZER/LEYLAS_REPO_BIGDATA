@@ -1,3 +1,12 @@
+**Exercise 3: ODD Analysis 2**
+
+And further analysis for ODD (Otomotiv Distribütörleri Derneği) data has been done. In order to aggregate monthly ODD data, we merged our code to main file.
+
+[Click here](R/Exercise3/RMarkdown-Homework-ODD_Sales_Aggregate.html) for DATA ANALYSIS
+
+[Click here](https://github.com/DATALOVERVIZUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise3/car_data_aggregate.rds) for Rds File
+
+[Click here](https://github.com/DATALOVERVIZUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise3/RMarkdown-Homework-ODD_Sales_Aggregate.Rmd) for Rmd file
 
 ***
 
