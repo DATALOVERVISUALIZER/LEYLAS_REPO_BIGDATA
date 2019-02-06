@@ -5,7 +5,7 @@
 
 This development consists of library(tidyverse),library(readxl) functions. By using these functions, ODD (Otomotiv Distribütörleri Derneği) data of 2016,10 was analyzed.
 
-[Click here](R/Exercise1/RMarkdown-Homework-ODDAnalysis_Assignment2.html) for DATA ANALYSIS
+[Click here](R/Exercise2/RMarkdown-Homework-ODDAnalysis_Assignment2.html) for DATA ANALYSIS
 
 [Click here](https://github.com/DATALOVERVIZUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise2/odd_retail_sales_2016_10.xlsx) for EXCEL File
 
