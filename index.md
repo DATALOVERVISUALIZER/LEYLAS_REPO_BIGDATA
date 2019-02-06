@@ -1,4 +1,6 @@
 
+# The Progress Journal of LEYLA YİĞİT for R Data Analysis
+
 **EGM Data Analysis**
 
 EGM data analysis has been done. 
