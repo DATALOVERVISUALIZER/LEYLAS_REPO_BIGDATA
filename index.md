@@ -1,6 +1,14 @@
 
 # The Progress Journal of LEYLA YİĞİT for R Data Analysis
 
+***
+
+**STATISTICS BASED Data Analysis With R*
+
+[Click here for Analysis](https://github.com/DATALOVERVIZUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise5.Rmd) for Rmd file.
+
+***
+
 **EGM Data Analysis**
 
 EGM data analysis has been done. 
