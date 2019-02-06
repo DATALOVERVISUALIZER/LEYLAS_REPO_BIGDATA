@@ -1,3 +1,18 @@
+
+**EGM Data Analysis**
+
+EGM data analysis has been done. 
+
+[Click here](R/Exercise4/EGM__Pension_Monitoring_Center__Data_Analysis.html) for DATA ANALYSIS
+
+[Click here](https://github.com/DATALOVERVIZUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise4/egm_example_data.xlsx) for EXCEL File
+
+[Click here](https://github.com/DATALOVERVIZUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise4/egm_data.rds) for Rds File
+
+[Click here](https://github.com/DATALOVERVIZUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise4/EGM_Data_Analysis.Rmd)for Rmd file
+
+***
+
 **ODD Analysis 2**
 
 And further analysis for ODD (Otomotiv Distribütörleri Derneği) data has been done. In order to aggregate monthly ODD data, we merged our code to main file.
