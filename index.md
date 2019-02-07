@@ -3,6 +3,8 @@
 
 ***The Progress Journal of LEYLA YİĞİT
 
+![Screenshot](765242_2578.jpg)
+
 ***
 
 **STATISTICS BASED Data Analysis With R*
