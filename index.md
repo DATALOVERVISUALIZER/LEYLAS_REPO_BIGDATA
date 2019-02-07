@@ -1,5 +1,7 @@
 
-# The Progress Journal of LEYLA YİĞİT
+# R DATA ANALYSIS
+
+***The Progress Journal of LEYLA YİĞİT
 
 ***
 
