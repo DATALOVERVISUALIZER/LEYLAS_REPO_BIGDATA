@@ -404,5 +404,37 @@ lpmodel
 #SOLUTION 1 FOR POST OFFICE
 
 ```{r eval=FALSE}
+# Load the lpSolveAPI library
+library(lpSolveAPI)
+# Load the lpSolveAPI library
+library(lpSolveAPI)
+library(readxl)
+
+lpmodel <- make.lp(0,14)
+lp.control(lpmodel, sense="min")
+set.objfn(lpmodel, c(120,40,120,40,120,40,120,40,120,40,120,40,120,40))
+
+add.constraint(lpmodel, c(1,0,0,1,1,1,1,0,0,0,0,0,0,0), ">=", 136)
+add.constraint(lpmodel, c(1,1,0,0,1,1,1,0,0,0,0,0,0,0), ">=", 104)
+add.constraint(lpmodel, c(1,1,1,0,0,1,1,0,0,0,0,0,0,0), ">=", 120)
+
+add.constraint(lpmodel, c(1,1,1,1,0,0,1,0,0,0,0,0,0,0), ">=", 152)
+add.constraint(lpmodel, c(1,1,1,1,1,0,0,0,0,0,0,0,0,0), ">=", 112)
+add.constraint(lpmodel, c(0,1,1,1,1,1,0,0,0,0,0,0,0,0), ">=", 128)
+
+add.constraint(lpmodel, c(0,0,1,1,1,1,1,0,0,0,0,0,0,0), ">=", 88)
+add.constraint(lpmodel, c(1,1,1,1,1,1,1,0,0,0,0,0,0,0), ">=",0)
+
+
+solve(lpmodel)
+get.objective(lpmodel)
+get.variables(lpmodel)
+get.dual.solution(lpmodel)
+
+lpmodel
+
+
+
+```
 
 ```
