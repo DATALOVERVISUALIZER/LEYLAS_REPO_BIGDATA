@@ -7,6 +7,15 @@
 
 ***
 
+
+**OPTIMIZATION With R*
+
+[Click here for CODE ](https://github.com/DATALOVERVISUALIZER/LEYLAS_REPO_BIGDATA_R/blob/master/R/OptimizationWithR/Optimizationwith_R_Examples.Rmd) for Rmd file.
+
+[Click here for Analysis](R/OptimizationWithR/Optimizationwith_R_Examples.html) for HTML file.
+
+***
+
 **STATISTICS BASED Data Analysis With R*
 
 [Click here for Analysis](https://github.com/DATALOVERVISUALIZER/LEYLAS_REPO_BIGDATA/blob/master/R/Exercise5.Rmd) for Rmd file.
