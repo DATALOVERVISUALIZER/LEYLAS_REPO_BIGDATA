@@ -1,7 +1,7 @@
 
 # R DATA ANALYSIS
 
-***The Progress Journal of LEYLA YİĞİT
+***The Progress Journal of LEYLA YİĞİT***
 
 ![Screenshot](765242_2578.jpg)
 
