@@ -1,0 +1,408 @@
+---
+title: "LP OPTIMIZATION WITH R"
+output: html_document
+---
+
+```{r}
+library(lpSolve)
+library(lpSolveAPI)
+
+```
+###################################TABLE CHAIR PRODUCTION#################################
+
+•A manufacturer produces two pieces of furniture: tables and chairs
+
+–  Tables sell for $1600 per piece and chairs sell for $1000 per pieces
+
+•Production of furniture requires two types of raw-material (lego pieces): small and large pieces
+
+–  There are 6 large and 8 small pieces available
+
+•Determine optimal production plan that maximizes total revenue
+
+Excel solution 
+Decision Variable	Table-x1	Chair-x2			
+	2	2			
+Obj. Coef.	1600	1000	OBJ=	5200	
+Consts	2	1	6	<=	6
+	2	2	8	<=	8
+
+#SOLUTION 1 FOR CHAIR and TABLE QUESTION
+```{r}
+obj.fun <- c(1600,1000)
+constr <- matrix (c(2,1,2,2) , ncol = 2, byrow =TRUE)
+constr.dir<- c("<=", "<=")
+rhs <- c(6,8)
+
+
+prod.sol <- lp("max", obj.fun , constr , constr.dir , rhs ,compute.sens = TRUE )
+
+
+prod.sol$ objval #objective function value
+prod.sol$ solution #decision variables values
+prod.sol$ duals #includes duals of constraints and reduce costs of variables, gives shodow price then rduce cost.
+
+
+
+```
+#SOLUTION 2 FOR CHAIR and TABLE QUESTION
+```{r}
+
+library(lpSolveAPI)
+
+lpmodel <- make.lp(0,2) # there are 2 decision variables
+lp.control(lpmodel, sense="max")
+set.objfn(lpmodel, c(1600,1200))
+add.constraint(lpmodel, c(2,1), "<=", 6)
+add.constraint(lpmodel, c(2,2), "<=", 8)
+
+
+solve(lpmodel)
+get.objective(lpmodel)
+get.variables(lpmodel)
+get.dual.solution(lpmodel)
+
+lpmodel
+
+```
+
+###############################Product 1 and Product 2#####################################
+
+A small business sells two products, named Product 1 and Product 2. Each tonne of Product 1 consumes 30 working hours, and each tonne of Product 2 consumes 20 working hours. The business has a maximum of 2,700 working hours for the period considered. As for machine hours, each tonne of Products 1 and 2 consumes 5 and 10 machine hours, respectively. There are 850 machine hours available.
+
+Each tonne of Product 1 yields 20 Me of profit, while Product 2 yields 60 Me for each tonne sold. For technical reasons, the firm must pro-duce a minimum of 95 tonnes in total between both products. We need to know how many tonnes of Product 1 and 2 must be produced to maximize total profit.
+
+**Below is excel solution
+Decision Variable	product1	product2			
+	20	75			
+Obj. Coef.	20	60	OBJ=	4900	
+Consts	30	20	2100	<=	2700
+	5	10	850	<=	850
+	1	1	95	>=	95
+
+
+
+#SOLUTION1 FOR Product Problem
+```{r eval=FALSE}
+install.packages("lpSolveAPI")
+library(lpSolveAPI)
+
+lpmodel <- make.lp(0,2)
+lp.control(lpmodel, sense="max")
+set.objfn(lpmodel, c(20,60))
+add.constraint(lpmodel, c(30,20), "<=", 2700)
+add.constraint(lpmodel, c(5,10), "<=", 850)
+add.constraint(lpmodel, c(1,1), ">=", 95)
+
+
+solve(lpmodel)
+get.objective(lpmodel) #4900 optimized profit
+get.variables(lpmodel) # solution  20    60  
+get.dual.solution(lpmodel) # dual(shadow price) 1   0   8 -20   reduced cost: 0   0
+
+lpmodel
+
+```
+#SOLUTION2 FOR Product Problem
+```{r eval=FALSE}
+#the same problem LPSOLve package solution,#example 2 solution with lpSolve
+library(lpSolve)
+
+#defining parameters
+obj.fun <- c(20, 60)
+constr <- matrix(c(30, 20, 5, 10, 1, 1), ncol = 2, byrow=TRUE)
+constr.dir <- c("<=", "<=", ">=") 
+rhs <- c(2700, 850, 95)
+
+#solving model
+prod.sol <- lp("max", obj.fun, constr, constr.dir, rhs, compute.sens = TRUE)
+prod.sol
+#accessing to R output
+prod.sol$objval #objective function value 
+prod.sol$solution #decision variables values 
+prod.sol$duals #includes duals of constraints and reduced costs of variables
+
+#sensitivity analysis results
+prod.sol$duals.from
+prod.sol$duals.to
+prod.sol$sens.coef.from
+prod.sol$sens.coef.to
+
+```
+
+###############################DESTINATION PROBLEM#####################################
+
+Let’s consider a transportation problem of two origins a and b, and three destinations 1, 2 and 3. In Table 2.1 are presented the cost cij of trans-porting one unit from the origin i to destination j, and the maximal capacity of the origins and the required demand in the destinations. We need to know how we must cover the demand of the destinations at a minimal cost.
+
+
+
+1	2	3	capacity
+				
+a	8	6	3	70
+b	2	4	9	40
+				
+demand	40	35	25	
+				
+
+
+This situation can be modeled with a LP with the following elements:
+
+•Decision variables of the form xij, representing units transported from origin i to destination j
+
+•An objective function with cost coefficients equal to cij
+
+•Two sets of constraints: a less or equal set of constraints for each origin, limiting the units to be transported, and a greater of equal set of constraints representing that the demand of each destina-tion must be covered.
+
+The resulting LP is:
+
+MIN z = 8xa1 + 6xa2 + 3xa3 + 2xb1 + 4xb2 + 9xb3 
+
+s.a. ca) xa1 + xa2 + xa3 70
+
+cb) xb1 + xb2 + xb3	40
+
+d1) xa1 + xb1	40
+
+d2) xa2 + xb2	35
+
+d3) xa3 + xb3	25
+
+xij	0
+
+EXCEL SOLVER SOLUTION is also below
+
+Decision Variable	a1	a2	a3	b1	b2	b3		
+	                 0	35	25	40	0	  0		
+Obj. Coef.	8	6	3	2	4	9	OBJ=	365
+Consts	1	1	1	60	<=	70		
+	1	1	1	40	<=	40		
+	1	1		40	>=	40		
+	1	1		35	>=	35		
+	1	1		25	>=	25		
+
+#SOLUTION 1
+```{r eval=FALSE}
+#defining parameters
+#origins run i in 1:m #destinations run j in 1:n 
+library(lpSolve)
+obj.fun <- c(8, 6, 3, 2, 4, 9)
+m <- 2
+n <- 3
+constr <- matrix(0, n+m, n*m)
+for(i in 1:m){ 
+  for(j in 1:n){ 
+    constr[i, n*(i-1) + j] <- 1 
+    constr[m+j, n*(i-1) + j] <- 1 
+  } 
+}
+
+constr.dir <- c(rep("<=", m), rep(">=", n)) 
+rhs <- c(70, 40, 40, 35, 25) 
+
+#solving LP model 
+prod.trans <- lp("min", obj.fun, constr, constr.dir, rhs, compute.sens = TRUE) 
+
+#LP solution 
+prod.trans$objval
+sol <- matrix(prod.trans$solution , m, n, byrow=TRUE)
+prod.trans$duals
+
+#sensitivity analysis of LP 
+prod.trans$duals.from 
+prod.trans$duals.to 
+prod.trans$sens.coef.from 
+prod.trans$sens.coef.to 
+```
+
+#SOLUTION 2
+
+```{r eval=FALSE}
+install.packages("lpSolveAPI")
+library(lpSolveAPI)
+
+lprec <- make.lp(0, 6) #there are 6 decision variables
+lp.control(lprec, sense="min")
+set.objfn(lprec, c(8, 6, 3, 2, 4, 9)) #objective function
+add.constraint(lprec, c(1, 1, 1,0,0,0), "<=", 70)
+add.constraint(lprec, c(0,0,0,1,1,1), "<=", 40)
+add.constraint(lprec, c(1,0,0, 1,0,0), ">=", 40)
+add.constraint(lprec, c(0,1,0, 0,1,0), ">=", 35)
+add.constraint(lprec, c(0,0,1, 0,0,1), ">=", 25)
+lprec
+solve(lprec)
+#maximum profit
+get.objective(lprec)
+#Get the solution
+get.variables(lprec)
+matrix_sol <- matrix(get.variables(lprec), 2, 3, byrow=TRUE)
+```
+
+###################################CARGO EXAMPLE#################################
+
+
+The example case;
+
+A trading company is looking for a way to maximize profit per transportation of their goods. The company has a train available with 3 wagons. When stocking the wagons they can choose between 4 types of cargo, each with its own specifications. How much of each cargo type should be loaded on which wagon in order to maximize profit?
+
+
+The following constraints have to be taken in consideration;
+
+Weight capacity per train wagon
+Volume capacity per train wagon
+Limited availability per cargo type
+Let’s assume we have the following information at hand:
+
+TRAIN WAGON	WEIGHT CAPACITY (TONNE)	SPACE CAPACITY (M2)
+w1	10	5000
+w2	8	4000
+w3	12	8000
+CARGO TYPE	AVAILABLE (TONNE)	VOLUME (M2)	PROFIT (PER TONNE)
+c1	18	400	2000
+c2	10	300	2500
+c3	5	200	5000
+c4	20	500	3500
+
+#SOLUTION 1 FOR CARGO QUESTION
+```{r eval=FALSE}
+library(lpSolveAPI)
+install.packages("reshape")
+install.packages("gridExtra")
+ 
+#used for result visualization
+library(ggplot2)
+library(reshape)
+library(gridExtra)
+ 
+#define the datasets
+  
+train<-data.frame(wagon=c('w1','w2','w3'), weightcapacity=c(10,8,12), spacecapacity=c(5000,4000,8000))
+ 
+cargo<-data.frame(type=c('c1','c2','c3','c4'), available=c(18,10,5,20), volume=c(400,300,200,500),profit=c(2000,2500,5000,3500))
+
+#create an LP model with 10 constraints and 12 decision variables
+ 
+lpmodel<-make.lp(2*NROW(train)+NROW(cargo),12)
+ 
+column<-0
+row<-0
+ 
+#build the model column per column
+for(wg in train$wagon){
+    row<-row+1
+    for(type in seq(1,NROW(cargo$type))){
+    column<-column+1
+     
+    #this takes the arguments 'column','values' & 'indices' (as in where these values should be placed in the column)
+    set.column(lpmodel,column,c(1, cargo[type,'volume'],1), indices=c(row,NROW(train)+row, NROW(train)*2+type))
+    }}
+ 
+#set rhs weight constraints
+set.constr.value(lpmodel, rhs=train$weightcapacity, constraints=seq(1,NROW(train)))
+ 
+#set rhs volume constraints
+set.constr.value(lpmodel, rhs=train$spacecapacity, constraints=seq(NROW(train)+1,NROW(train)*2))
+ 
+ 
+#set rhs volume constraints
+set.constr.value(lpmodel, rhs=cargo$available, constraints=seq(NROW(train)*2+1,NROW(train)*2+NROW(cargo)))
+ 
+#set objective coefficients
+set.objfn(lpmodel, rep(cargo$profit,NROW(train)))
+ 
+#set objective direction
+lp.control(lpmodel,sense='max')
+ 
+#I in order to be able to visually check the model, I find it useful to write the model to a text file
+write.lp(lpmodel,'model.lp',type='lp')
+#solve the model, if this return 0 an optimal solution is found
+solve(lpmodel)
+ 
+#this return the proposed solution
+get.objective(lpmodel)
+```
+
+#SOLUTION 2 FOR CARGO QUESTION
+```{r eval=FALSE}
+# Load the lpSolveAPI library
+library(lpSolveAPI)
+
+DataForModel <- read.table("CargoData.csv", sep=",", header=TRUE)
+
+NoOfConstraints <- ncol(DataForModel)-2
+NoOfVariables <-nrow(DataForModel)-1
+
+# We create a new empty model 
+lpModel <-make.lp(NoOfConstraints,NoOfVariables)
+
+#Name the model variables
+VariableNames <- t(DataForModel[1:NoOfVariables,1])
+#Name the constraints
+ConstraintNames <- colnames(DataForModel[3:(NoOfConstraints+2)])
+
+# minimize the cost 
+lp.control(lpModel, sense="max")
+
+for(i in 1:NoOfVariables){ 
+  set.column(lpModel, i, DataForModel[i,3:(NoOfConstraints+2)])
+} 
+# Each constraint provides the lower bound of rhs
+set.constr.type(lpModel,rep("<=", NoOfConstraints))
+
+
+# Set the RHS values
+set.rhs(lpModel, DataForModel[(NoOfVariables+1),3:(NoOfConstraints+2)])
+
+
+dimnames(lpModel) <- list(ConstraintNames, VariableNames)
+
+#Objective
+obj.profit <- DataForModel[1:NoOfVariables,2]
+set.objfn(lpModel, obj.profit)
+lpModel
+# In order to be able to visually check the model, you can write the model to a text file
+write.lp(lpModel,'modelCargo.lp',type='lp')
+
+# Solving the model
+solve(lpModel) 
+get.objective(lpModel)
+get.variables(lpModel)
+
+```
+
+
+#SOLUTION 3 FOR CARGO QUESTION
+```{r eval=FALSE}
+lpmodel <- make.lp(0,12)
+lp.control(lpmodel, sense="max")
+set.objfn(lpmodel, c(2000,2000,2000,2500,2500,2500,5000,5000,5000,3500,3500,3500))
+
+add.constraint(lpmodel, c(1,0,0,1,0,0,1,0,0,1,0,0), "<=", 10)
+add.constraint(lpmodel, c(0,1,0,0,1,0,0,1,0,0,1,0), "<=", 8)
+add.constraint(lpmodel, c(0,0,1,0,0,1,0,0,1,0,0,1), "<=", 12)
+
+add.constraint(lpmodel, c(400,0,0,300,0,0,200,0,0,500,0,0), "<=", 5000)
+add.constraint(lpmodel, c(0,400,0,0,300,0,0,200,0,0,500,0), "<=", 4000)
+add.constraint(lpmodel, c(0,0,400,0,0,300,0,0,200,0,0,500), "<=", 8000)
+
+add.constraint(lpmodel, c(1,1,1,0,0,0,0,0,0,0,0,0), "<=", 18)
+add.constraint(lpmodel, c(0,0,0,1,1,1,0,0,0,0,0,0), "<=", 10)
+add.constraint(lpmodel, c(0,0,0,0,0,0,1,1,1,0,0,0), "<=", 5)
+add.constraint(lpmodel, c(0,0,0,0,0,0,0,0,0,1,1,1), "<=", 20)
+
+solve(lpmodel)
+get.objective(lpmodel)
+get.variables(lpmodel)
+get.dual.solution(lpmodel)
+
+lpmodel
+
+
+```
+###################################POST OFFICE EMPOYEE EXAMPLE###########################
+
+
+#SOLUTION 1 FOR POST OFFICE
+
+```{r eval=FALSE}
+
+```
