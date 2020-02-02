@@ -1,0 +1,587 @@
+---
+
+title: "ISTATISTIK_FINAL"
+
+author: "Xforce"
+
+date: "25 AralÄ±k 2019"
+
+output:
+
+  html_document: default
+
+  pdf_document: default
+---
+
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+ 
+# EDA AND DATA PREPROCESSING
+## EDA
+### Get Data Set
+
+
+
+```{r Get Data SET }
+
+ 
+
+#install.packages("stargazer",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+#install.packages("DataExplorer" ,dependencies = TRUE,repos = "https://cran.r-project.org")
+
+#install.packages("anytime",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+#install.packages("corrplot")
+
+ 
+
+library(stargazer)
+
+library(Hmisc)
+
+library(readxl)
+
+library(anytime)
+
+ 
+
+df <- read_excel("C:/Users/Baris/Desktop/ISTATISTIK_FINAL/2018-03-01.xlsx")
+
+
+ 
+
+ 
+
+```
+
+ 
+
+```{r correct data types , data manipulation }
+
+library(lubridate)
+
+ 
+
+#all the order data is the same  so order_time can be only time
+
+#Extracting time from POSIXct
+
+ 
+
+df$Order_time <- format(as.POSIXct(df$Order_time) ,format = "%H:%M:%S")
+
+ 
+
+df$Order_Change_Time<- format(as.POSIXct(df$Order_Change_Time) ,format = "%H:%M:%S")
+
+ 
+
+df$London_time<- format(as.POSIXct(df$London_time) ,format = "%H:%M:%S")
+
+ 
+
+
+
+```
+ 
+
+
+ 
+
+```{r DataExplorer }
+
+ 
+
+library(DataExplorer)
+
+library(SmartEDA)
+
+
+plot_intro(df)
+ExpData<-ExpData(data=df,type=2)
+print(ExpData)
+
+#missing value plot
+table(is.na(df)) # # total NA values
+plot_missing(df)
+
+```
+
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+ 
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+```{r describe }
+
+
+describe(df)
+
+summary(df)
+
+```
+
+ 
+
+ 
+
+ 
+
+
+ 
+
+
+ 
+
+
+ 
+```{r outlier_detection}
+
+
+###  Box-Plots & Histograms of Important Variables
+#colnames(numeric)
+
+#numeric variable'ların boxplot alındı
+
+boxplot(df$Best_Ask, main = "Best Ask") #0 is the outlier value
+boxplot(df$Best_Bid, main = "Best Bid")
+boxplot(df$Order_price, main = "Order_price")
+boxplot(df$Order_size,main = "Order_size")
+boxplot(df$Order_seen_iceberg,main = "Order_seen_iceberg")
+boxplot(df$Order_Remaining,main = "Order_Remaining")
+
+
+
+#interquartile range is calculated in much the same way as the range. All that we do is subtract the first quartile from the third quartile:
+
+#IQR = Q3 – Q1.
+
+#The interquartile range shows how the data is spread about the median. It is less susceptible than the range to outliers.
+
+#That is, if a data point is below Q1 – 1.5×IQR or above Q3 + 1.5×IQR, it is viewed as being too far from the central values to be reasonable.
+
+
+
+#Best_Ask :# IQR=0.05 : 0 is the outlier value. 11.58 – 1.5×0.05  or above 11.63 + 1.5×0.05 . between < 11.505 or <11.705 values are outliers 
+
+#Best_Bid  :IQR=11.62-11.57=0.05. Outlier values are between 11.57– 1.5×0.05  or above 11.62 + 1.5×0.05 = < 11.49 and 11.695
+
+#Order_size: IQR:  7500 -316=7184. Outlier values are between 316 – 1.5×7184 or above 7500 + 1.5×7184 = < -10460 and >18276
+
+#MID PRICE: IQR: 11.62-11.57=0.05 Outlier values are is below 11.57 – 1.5×0.05 or above :11.62+ 1.5×0.05= <11.49 and >11.69  
+
+# Order_Remaining: IQR:5873- 12=5861  Outlier values are is below   12 – 1.5×5861 or above 5873 + 1.5×5861= <-8780 and >14665
+
+#  Order_seen_iceberg:Is the same with order size: < -10460 and >18276
+
+
+
+
+#######order size	
+#IQR	10776
+#Outlier line	18276
+	
+#######order seen iceberg	
+#IQR	10776
+#Outlier line	18276
+	
+#######order_price	
+#IQR	0.09
+#Outlier line	11.72
+	
+#######best bid	
+#IQR	0.075
+#Outlier line	11.695
+	
+#######besk ask	
+#IQR	0.075
+#Outlier line	11.705
+	
+#######order_change_order	
+#IQR	3
+#Outlier line	6
+
+
+#new df2 are prepared without outliers
+df2 <- read_excel("C:/Users/Baris/Desktop/ISTATISTIK_FINAL/2018-03-01_data2.xlsx") #46229 observation  #yanlızca limit order lar alındı
+
+```
+
+
+ 
+
+
+
+
+
+
+ 
+
+```{r IDENTIFYNEARZEROVARIANCE, eval=FALSE, include=FALSE}
+
+library(caret)
+
+# Identifying near-zero variance variable
+
+nearZeroVar(df2, saveMetrics = TRUE)
+
+ 
+
+#zero variance variable : have unique values or have only a handful of unique values. these variables nstable models or in some cases, can also cause the model to crash
+
+ 
+
+#Frequency Ration – It is the ration of the most common value over the second most prevalent value. If the value is close to one, then the predictor is good to use. However, a substantial value indicates that the variable is unbalanced and should be eliminated.
+
+ 
+
+#t is calculated by dividing the number of unique values divided by the total number of samples that approaches zero as the granularity of the data increases.
+df2$unknown_c21 <-NULL #tüm kaytlar NULL oldugu için silindi.,NULL
+df2$Realized_size <-NULL #NULL Values  percentage is high.½67
+df2$Changer_ID <-NULL #kayıtların ½67si NULL oldugundan silindi.Diğer Veriler Number ve ID oldugundan it is an Uninformative Feature
+
+
+df2$unknown_c24 <- NULL # ZERO VARIANCE  all rows have 'H' value.
+df2$Order_ID <- NULL #Uninformative Feature high variance. Nearly all values value unique
+df2$Stock_name <- NULL # ZERO VARIANCE  oldugu için silindi .Uninformative Feature
+df2$Date < -NULL #zero variance oldugu için silindi. Uninformative Feature
+df2$Order_Type <- NULL #zero variance, 1=Limit Order book then only this values are filtred.
+
+ 
+
+#df$Realized_size<-NULL  #kayıtların ½67si NULL but it can be used.
+
+ 
+
+#these columns are categorical, data type should be factor
+
+df2$Order_Type<-as.factor(as.double(df2$Order_Type))
+df2$A_S<-as.factor(as.character(df2$A_S))
+df2$Exchange_Order_Type<-as.factor(as.double(df2$Exchange_Order_Type))
+df2$Order_Category<-as.factor(as.double(df2$Order_Category))
+df2$Duration<-as.factor(as.character(df2$Duration))
+df2$Change_Reason<-as.factor(as.double(df2$Change_Reason))
+df2$Order_Status<-as.factor(as.double(df2$Order_Status))
+df2$unknown_c17<-as.factor(as.character(df2$unknown_c17))
+df2$Session<-as.factor(as.character(df2$Session))
+df2$Order_change_order<-as.factor(as.double(df2$Order_change_order))
+
+
+
+ 
+
+#MID_PRICE  feature is added to the date frame
+library(tidyverse)
+df2<-df2 %>% 
+  mutate(Mid_Price = (df2$Best_Ask+df2$Best_Bid)/2)
+ 
+
+
+```
+
+ 
+
+ 
+
+```{r HISTOGRAM OF Y ORDER PRICE, eval=FALSE, include=FALSE}
+
+#Histogram of BEST_BID AND BEST_ASK
+
+#BEST_BID HISTOGRAM
+x <- df2$Best_Bid
+
+h<-hist(x, breaks=10, col="red", xlab="BEST BID",
+
+   main="Histogram with Best_Bid ")
+
+xfit<-seq(min(x),max(x),length=40)
+
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x))
+
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+
+lines(xfit, yfit, col="blue", lwd=2)
+
+#Best_Ask HISTOGRAM 
+y<- df2$Best_Ask
+
+h<-hist(y, breaks=10, col="red", xlab="BEST ASK",
+
+   main="Histogram with Best_ASK ")
+
+xfit<-seq(min(x),max(x),length=40)
+
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x))
+
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+
+lines(xfit, yfit, col="blue", lwd=2)
+
+
+#MID RPCIE HISTOGRAM
+y<- df2$Mid_Price
+
+h<-hist(y, breaks=10, col="red", xlab="MID PRICE",
+
+   main="Histogram with MID PRICE ")
+
+xfit<-seq(min(x),max(x),length=40)
+
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x))
+
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+
+lines(xfit, yfit, col="blue", lwd=2)
+
+
+
+```
+
+
+
+
+
+```{r CORRELATION }
+
+library(Hmisc)
+
+############### Numerical features - EDA  ###############
+
+numeric.names <- names(df2[, sapply(df2, is.numeric)])
+
+numeric <- df2[, numeric.names]
+
+colnames(numeric)    #5 numeric name
+
+ 
+
+#[1] "Order_size"         "Order_Remaining"    "Order_seen_iceberg" "Order_price"      
+ 
+#[5] "Best_Bid"           "Best_Ask"            "Mid_Price"
+
+ 
+
+##################################### CATEGORICAL FEATURES #############
+
+############### FACTOR features - EDA  ###############
+
+factor.names <- names(df2[, sapply(df2, is.factor)])
+
+factor <- df2[, factor.names]
+
+colnames(factor) #  10 factor name
+
+ 
+
+#"[1] "A_S"                 "Order_Type"          "Exchange_Order_Type" "Order_Category"    
+
+#[5] "Duration"            "Order_Status"        "Change_Reason"       "unknown_c17"       
+
+#[9] "Session"   "Order_change_order" 
+
+```
+
+ 
+ 
+
+
+```{r CORRELATION GRAPH}
+
+library(corrgram)
+
+library(data.table)
+
+ 
+
+#install.packages("corrgram" ,dependencies = TRUE,repos = "https://cran.r-project.org")
+
+ 
+
+ 
+
+# Correlation matrix of numeric features
+
+ 
+
+correlation.matrix <- cor(numeric)
+
+ 
+
+print(correlation.matrix)
+
+ 
+
+corrs <- setDT(melt(correlation.matrix))[order(value)]
+
+cor_Order_price <- subset(corrs, corrs$Var2 == "Order_price") # correlations with targ
+
+ 
+
+print(cor_Order_price)
+
+ 
+
+ 
+#CORRELATION GRAPH for numeric data 
+
+ 
+
+corrgram(numeric, order=FALSE,
+
+                  lower.panel=panel.shade,
+
+         upper.panel=panel.pie,
+
+         text.panel=panel.txt,
+
+       main="Correlation between numeric features")
+
+ 
+
+
+ 
+
+ 
+
+#second gragh
+
+corrgram(df, order=FALSE,
+
+         upper.panel=panel.cor, main="Correlation between numeric features")
+
+
+
+ 
+
+ 
+
+```
+
+
+
+
+
+
+ 
+```{r reg.model with contious }
+
+# kitchen sink model adopted, all numeric and factor features are included in the initial model.
+
+reg.model <- lm(df2$Mid_Price ~ df2$Order_size + df2$Order_Remaining+ df2$Order_seen_iceberg + df2$Order_price +df2$A_S  +df2$Duration+df2$Order_Status+df2$Order_change_order+df2$unknown_c17)
+
+
+(summary(reg.model))
+
+
+
+#[1] "Order_size"         "Order_Remaining"    "Order_seen_iceberg" "Order_price"      
+ 
+#[5] "Best_Bid"           "Best_Ask"             "Mid_Price"
+
+#If you like to understand how well the independent variables “explain” the variance in your model, the R-Squared formula can be powerful.
+#R-square value tells you how much variation is explained by your model. ... Whereas p-value tells you about the F statistic hypothesis testing of the "fit of the #intercept-only model and your model are equal". So if the p-value is less than the significance level (usually 0.05) then your model fits the data well
+
+#Pr. is the p-value for the hypothesis test for which the t value is the test statistic. It tells you the probability of a test statistic at least as unusual as #the one you obtained, if the null hypothesis were true. In this case, the null hypothesis is that the true coefficient is zero; if that probability is low, it's #suggesting that it would be rare to get a result as unusual as this if the coefficient were really zero.
+
+
+
+```
+
+ 
+
+ 
+```{r reg.model2 }
+
+ 
+
+# Then, features with bigger p-values are iteratively eliminated, until all used features are equally important.
+
+
+reg.model2 <- lm(df2$Mid_Price ~ df2$Order_size + df2$Order_Remaining+ df2$Order_seen_iceberg + df2$Order_price +df2$A_S)
+
+ summary(reg.model2)
+
+ colnames(numeric)
+
+```
+
+ 
+
+ 
+
+ 
+
+```{r reg.model3}
+
+ 
+
+# Then, features with bigger p-values are iteratively eliminated, until all used features are equally important.
+
+
+reg.model3 <- lm(df2$Mid_Price ~ df2$Order_size + df2$Order_Remaining+  df2$Order_price +df2$A_S)
+
+ summary(reg.model3)
+
+
+
+ 
+
+```
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+```{r stargazer}
+
+# At above final model, we got 4 features which explains 20% of the variance in order price feature.
+
+ 
+
+ 
+
+ 
+
+stargazer(reg.model, reg.model2,reg.model3, type = "text", align = T)
+
+```
+
+
+
+
+
+
+
+
+

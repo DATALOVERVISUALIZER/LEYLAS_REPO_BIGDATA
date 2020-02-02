@@ -1,0 +1,437 @@
+---
+title: "Assignment2"
+author: "Leyla Yigit"
+date: "July 30, 2019"
+output: html_document
+---
+
+
+#DATA FRAME
+#Sales - Unit sales (in thousands) at each location
+#CompPrice - Price charged by competitor at each location
+#Income - Community income level (in thousands of dollars)
+#Advertising - Local advertising budget for company at each location (in thousands of dollars)
+#Population - Population size in region (in thousands)
+#Price - Price company charges for car seats at each site
+#ShelveLoc - A factor with levels Bad, Good and Medium indicating the quality of the shelving location for the car seats at each site
+##Age - Average age of the local population
+#Education - Education level at each location
+#Urban - A factor with levels No and Yes to indicate whether the store is in an urban or rural location
+#US - A factor with levels No and Yes to indicate whether the store is in the US or not
+
+
+#SVM 
+#support vector machines are a famous and a very strong classification technique which does not use any sort of probabilistic model like any other classifier but simply generates hyperplanes or simply putting lines, to separate and classify the data in some feature space into different regions.
+##non-linear decision boundaries which is able to separate non linear data using radial kernel support vector classifier.
+
+
+#TASK DESC 
+#In the class, a classification tree was applied to the “Carseats” data set after converting “Sales” into a qualitative response variable. Now we will apply support vector machine to same qualitative response variable.
+ 
+
+# 1. Split the data set into a training set and a test set.
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Get Necessary Packages 
+
+```{r get packages, eval=FALSE, include=FALSE}
+install.packages("cluster",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("Rtsne",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("ggplot2",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("readr",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("dplyr",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tidyverse",dependencies = TRUE)
+install.packages("rlang",dependencies = TRUE)
+install.packages("mratios", dependencies = TRUE)
+install.packages("multcomp",dependencies = TRUE)
+install.packages("Rcpp")
+install.packages("caret",dependencies = TRUE)
+packageList <- c("randomForest", "plyr", "sqldf", "shiny", "lattice", "ggplot2", "googleplotvis", "caret", "e1071", "gbm", "glmnet", "kernlab", "ipred", "lda", "tm", "party", "nnet", "rpart", "Snowball", "openNLP", "stringr", "reshape2", "data.table")
+install.packages(packageList, dependencies=TRUE)
+install.packages('Rcpp', dependencies = TRUE)
+install.packages('data.table', dependencies = TRUE)
+install.packages('lattice', dependencies = TRUE)
+install.packages("tree",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("ISLR",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("FactoMineR",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("e1071",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("gbm",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("SmartEDA")
+install.packages("rattle",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("partykit",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("rpart",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("corrgram")
+
+devtools::install_github("ropensci/visdat")
+
+
+"visdat" %in% rownames(installed.packages()) #whether a package is downloaded
+
+
+
+```
+
+
+###  Check Data Set 
+```{r Data SET SHAPE   }
+library(caret)
+library("SmartEDA")
+library("caret")
+library("FactoMineR")
+library("e1071")
+library("gbm")
+library(psych)  #for general functions
+library(ggplot2)  #for data visualization
+library(rpart)  #for trees
+#library(rattle)    # Fancy tree plot This is a difficult library to install (https://gist.github.com/zhiyzuo/a489ffdcc5da87f28f8589a55aa206dd) 
+library(rpart.plot)             # Enhanced tree plots
+library(RColorBrewer)       # Color selection for fancy tree plot
+library(party)                  # Alternative decision tree algorithm
+library(partykit)               # Convert rpart object to BinaryTree
+library(pROC)   #for ROC curves
+library(tree)
+library(ISLR)
+library(MASS)
+library(randomForest)
+library(caret)
+library(FactoMineR)
+library(e1071)
+library(gbm)
+library(xgboost)
+library(data.table)
+library(mlr)
+library(Hmisc)
+library(GGally)
+library(stats4)
+library(SmartEDA)
+library(doParallel)
+library(plyr); library(dplyr)
+library(adabag)
+library(leaps)
+library(elasticnet)
+library(glmnet)
+library(tree)
+library(ISLR)
+library(caret)
+
+
+
+
+```
+
+
+###  EDA AND PREPROS
+```{r Data SET  EDA AND PREPROS  }
+#remove previous objects in environment
+rm(list=ls()) # clean all
+options(scipen = 999)
+
+
+attach(Carseats)
+names(Carseats)
+
+#Column names of dataset
+#[1] "Sales"       "CompPrice"   "Income"      "Advertising" "Population"  "Price"       "ShelveLoc"   "Age"         "Education"   "Urban"       "US"   
+
+library(psych)
+#describe(Carseats)
+dim(Carseats) #it has 11  Variables      400  Observations
+#head(Carseats)
+nrow(Carseats) #400 rows 
+NCOL(Carseats) # 11 cols 
+#check data types 
+
+str(Carseats, list.len=ncol(Carseats)) #list all data frame
+#(summary(Carseats))
+
+
+
+#histogram of outcome
+ggplot(data=Carseats, aes(x=Sales)) +
+  geom_histogram(binwidth=1, boundary=.5, fill="white", color="black") + 
+  geom_vline(xintercept = 8, color="red", size=2) +
+  labs(x = "Sales")
+#These columsn will be encoded
+#ShelveLoc 
+#Urban 
+#US
+
+#Sales here is quantitative variable 
+```
+
+
+### Numerics and factors 
+```{r Data SET Numerics and factors  }
+
+numeric.names <- names(Carseats[, sapply(Carseats, is.numeric)])
+numeric <- Carseats[, numeric.names]
+colnames(numeric) #"Sales"       "CompPrice"   "Income"      "Advertising" "Population"  "Price"       "Age"         "Education"   
+
+factor.names <- names(Carseats[, sapply(Carseats, is.factor)])
+factor <- Carseats[, factor.names] 
+colnames(factor) #[1]  "ShelveLoc" "Urban"     "US"  
+
+#NEAR ZERO VARIANCE 
+# count of unique values in numeric features
+#https://www.r-bloggers.com/near-zero-variance-predictors-should-we-remove-them/
+numeric.unique <- apply(numeric, 2, function(x) nlevels(as.factor(x)))
+
+x = nearZeroVar(Carseats, saveMetrics = TRUE) #
+ 
+str(x, vec.len=11) #we see that none of columsn can be considered as zero variance
+
+#describe(numeric) # detailed summary
+summary(numeric)
+
+```
+
+
+
+
+
+
+### Correlations with quantitative data
+```{r Correlations, fig.height=9, fig.width=13}
+
+correlation.matrix <- cor(subset(Carseats, select=-c(ShelveLoc,Urban,US)))  # omit qualitative data
+
+corrs <- setDT(melt(correlation.matrix))[order(value)]
+cor_saleprice <- subset(corrs, corrs$Var2 == "Sales") # correlations with target
+
+
+library(corrgram)
+
+
+corrgram(Carseats, order=FALSE, 
+                  lower.panel=panel.shade,
+         upper.panel=panel.pie, 
+         text.panel=panel.txt,
+         main="Corrgram of variables ")
+
+
+# Income	Sales	0.15195098		 Advertising	Sales	0.26950678 has the most positive direct correlation with the sales 
+
+
+```
+### price and sales has negative correlation with -0.44495073 percent. 
+### comprice and price has positive correlation
+### High correlation can affect models in a nagetive way. But in this analysis there is no high correlation to need to reomeve columns.
+
+
+
+
+###  Box-Plots & Histograms of Important Variables
+```{r  Box-Plots & Histograms of Important Variables}
+
+boxplot(Sales, main="Number of Car Seats Sold ('000)")
+boxplot(Advertising, main="Advertising Budget ('000 USD)")
+boxplot(Sales~ShelveLoc, data=Carseats, main="Sales broken down by ShelfLoc", 
+    xlab="Shelf Location", ylab="Sales ('000 units sold)")
+boxplot(Sales~US, data=Carseats, main="Sales broken down by Store in US", 
+    xlab="US", ylab="Sales ('000 units sold)")
+
+boxplot(Sales~Urban, data=Carseats, main="Sales broken down by Store in UrbanArea", 
+    xlab="Urban Location", ylab="Sales ('000 units sold)")
+
+#there is some outliers in the data. but they will be kepts
+```
+
+### T_TEST
+```{r  T_TEST}
+#A t-test is a type of inferential statistic used to determine if there is a significant difference between the means of two groups
+t.test(Carseats$Sales,Carseats$Advertising) ##Null hypothesis:There is no relation between Sales and Advertising #Result:Null hypothesis rejected 
+```
+
+
+## TRAIN TEST SPLIT
+
+### 1. Split the data set into a training set and a test set.
+
+### ENCODING - Train, Test, Split 
+```{r Train test split, fig.height=15, fig.width=15}
+
+#ENCODING 
+Carseats <- model.matrix(~.+0,data = Carseats)
+Carseats <- as.data.frame(Carseats)
+
+#label
+High=ifelse(Sales<=8,"No","Yes")
+
+
+
+#Attaching new variable to the data frame
+Carseats=data.frame(Carseats,High)
+
+
+#Create validation set
+set.seed(2)
+train= sample(1:nrow(Carseats), nrow(Carseats)*0.7)
+Carseats.test=Carseats[-train,] 
+High.test=High[-train] # y degeri
+Carseats.train=Carseats[train,]
+
+
+
+# Drop target labels from actual data sets 
+Carseats.test$Sales <- NULL  #target variable should be deleted from the train
+Carseats.train$Sales <- NULL #target variable should be deleted from the train
+
+
+#setdiff(Carseats.train, Carseats.test) #check difference after encoding, no dif 
+
+
+```
+
+
+
+
+# 2. Fit a support vector machine with the radial kernel to the training set.  Use 10 fold cross validation and grid search to detect best parameters.
+
+#3. Use your optimal parameters and your model from (2) to predict the qualitative response variable . Calculate accuracy.
+
+```{r SVM radial kernel , fig.height=15, fig.width=15}
+library(e1071)
+
+# RBF kernel is a function whose value depends on the distance from the origin or from some point
+
+svmfit=svm(High~., data=Carseats.train,type = 'C-classification', kernel="radial",cost=1,gamma=2)
+
+#show summary of SVM
+summary(svmfit) # 200 ( 119 81 ) 
+
+
+#Best parameters 
+
+
+set.seed(1)
+tune.out=tune(svm, High~., 
+              data=Carseats.train, 
+              kernel="radial", 
+              ranges=list(cost=c(0.1,1,3),
+                          gamma=c(0.5,4,5),
+                          degree=c(1,5,8,3,2)))
+
+
+#(tune.out$best.model)
+bestmod=tune.out$best.parameters
+summary(bestmod)
+
+#tune.out$best.performance # 0.2714286
+#cost <3	> gamma <0.5> degree <1> 	
+
+
+#use best parameters 
+
+svmfit_t=svm(High~., data=Carseats.train,type = 'C-classification', 
+           kernel="radial", cost=3,gamma=0.5, degree=1)
+
+#summary (svmfit_t) #Number of Support Vectors:  277 ( 159 118)
+
+
+#predict test set
+# Predict and Making the Confusion Matrix  
+ypred=predict(svmfit_t,Carseats.test) 
+#table(predict=ypred, truth=Carseats.test$High) #modelin train sonucundan cıkan sonuclar ile test setteki sonuclar  ile accuracy 
+#      truth
+# predict  No Yes
+  #   No  68  13
+  #   Yes 7  32
+#OR 
+library(caret)
+
+confusionMatrix(Carseats.test$High, ypred)
+
+
+
+#CV 
+
+library(caret)
+library(kernlab)
+
+tc <- tune.control(cross = 10)
+
+
+svmfit_CV=svm(High~., data=Carseats.train,type = 'C-classification',trControl = tc)
+
+svmfit_CV$cost #1
+svmfit_CV$gamma #0.08333333
+svmfit_CV$degree # 3 
+
+#plot(svmfit_t, Carseats)
+
+```
+
+
+
+#  4. Fit a support vector machine with the polynomial kernel to the training set.  Use 10 fold cross validation and grid search to detect best parameters.
+# 5. Use your optimal parameters and your model from (4) to predict the qualitative response variable . Calculate accuracy.
+
+```{r SVM polynomial , fig.height=15, fig.width=15}
+
+#model without grid 
+svm.pol <- svm(High ~ ., data=Carseats.train, type='C-classification', kernel='polynomial', degree=8, gamma=0.1, coef0=1, scale=FALSE)
+
+#CV 
+
+tc <- tune.control(cross = 10)
+
+
+svmfit_CV_p=svm(High~., data=Carseats.train,type = 'C-classification',kernel='polynomial',trControl = tc)
+
+svmfit_CV_p$cost #1
+svmfit_CV_p$gamma #0.08333333
+svmfit_CV_p$degree # 3 
+
+# Predict and Making the Confusion Matrix  with 10K 
+ypred_p=predict(svmfit_CV_p,Carseats.test) 
+
+confusionMatrix(Carseats.test$High, ypred_p)
+
+#Reference
+#Prediction No Yes
+ #      No  68   7
+  #     Yes 12  33
+   
+#Accuracy : 0.8417    
+
+# hyperparameters of SVM using a grid search algorithm.With 10K # I expend the parameter scale
+
+svm_tune_p<-tune(svm, High~., data=Carseats.train, kernel="polynomial", nrepeat = 10, sampling = "cross", cross = 10,ranges=list(cost=c(0.01, 0.10 , 1.3, 1.00 , 10 ,100), gamma=c(0.25, 0.50, 1.00 ,2.00 ,4.00,5)))
+bestmod=svm_tune_p$best.parameters
+summary(bestmod)
+# cost  ::1   gamma  0.25
+#after finding cost and gaama 
+
+
+
+svm_tune_p<- tune(svm, High~., data=Carseats.train, kernel="polynomial", nrepeat = 10, sampling = "cross", cross = 10,ranges=list(cost=1,gamma=0.25,degree=c(0.1,1.3,1.4,1.6,1.8,2,5,8,3) ))
+bestmod=svm_tune_p$best.parameters
+summary(bestmod)
+
+#☺predict train data w,th best parameters 
+svmfit_pol=svm(High~., data=Carseats.train,type = 'C-classification',kernel='polynomial',trControl = svm_tune_p)
+
+
+#degree=1.3 
+
+# Predict and Making the Confusion Matrix  with 10K  and grid search
+ypred_pol=predict(svmfit_pol,Carseats.test) 
+
+confusionMatrix(Carseats.test$High, ypred_pol)
+ 
+#         Reference
+#Prediction No Yes
+ #      No  68   7
+  #     Yes 12  33
+                                          
+   #            Accuracy : 0.8417
+
+#polynomial has better accuracy with this new parameters 
+                                                                                                                     
+```

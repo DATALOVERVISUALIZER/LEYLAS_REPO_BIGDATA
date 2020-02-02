@@ -1,0 +1,372 @@
+---
+title: "Assignment1"
+author: "Leyla Yigit"
+date: "July 22, 2019"
+output: html_document
+---
+
+
+### TASK DESCRIPTIONS
+
+###  For each question, present both the answer and the R code that helps you to produce that answer. Upload answers to the blackboard.In the class, a classification tree was applied to the “Carseats” data set after  converting “Sales” into a qualitative response variable. Now we will seek to predict “Sales” using regression trees and related approaches, treating the response as a quantitative variable.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Get Necessary Packages 
+
+```{r update R, eval=FALSE, include=FALSE}
+#install new version of R because of tree package is not avaible on 3.5.3 R version 
+install.packages("installr")
+library(installr)
+updateR() # new version of R is 3.6
+
+```
+
+
+```{r get packages, eval=FALSE, include=FALSE}
+install.packages("cluster",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("Rtsne",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("ggplot2",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("readr",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("dplyr",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tidyverse",dependencies = TRUE)
+install.packages("rlang",dependencies = TRUE)
+install.packages("mratios", dependencies = TRUE)
+install.packages("multcomp",dependencies = TRUE)
+install.packages("Rcpp")
+install.packages("caret",dependencies = TRUE)
+packageList <- c("randomForest", "plyr", "sqldf", "shiny", "lattice", "ggplot2", "googleplotvis", "caret", "e1071", "gbm", "glmnet", "kernlab", "ipred", "lda", "tm", "party", "nnet", "rpart", "Snowball", "openNLP", "stringr", "reshape2", "data.table")
+install.packages(packageList, dependencies=TRUE)
+install.packages('Rcpp', dependencies = TRUE)
+install.packages('data.table', dependencies = TRUE)
+install.packages('lattice', dependencies = TRUE)
+install.packages("tree",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("ISLR",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+"tree" %in% rownames(installed.packages()) #whether a package is downloaded
+
+install.packages("SmartEDA")
+
+install.packages("rattle",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+
+```
+
+
+## Check Data Set 
+```{r Data SET SHAPE   }
+library(tree)
+library(ISLR)
+library(caret)
+library("SmartEDA")
+
+
+attach(Carseats)
+
+
+
+ExpData(data=Carseats,type=2)
+#there is no missing values but there is factor values to be handled with
+```
+
+
+```{r Data SET  }
+library(tree)
+library(ISLR)
+library(caret)
+
+
+names(Carseats)
+
+#Column names of dataset
+#[1] "Sales"       "CompPrice"   "Income"      "Advertising" "Population"  "Price"       "ShelveLoc"   "Age"         "Education"   "Urban"       "US"   
+
+head(Carseats)
+nrow(Carseats) #400 rows 
+NCOL(Carseats) # 11 cols 
+#check data types 
+str(Carseats, list.len=ncol(Carseats)) 
+
+ (summary(Carseats))
+#These columsn will be encoded
+#ShelveLoc 
+#Urban 
+#US
+
+#Sales here is quantitative variable 
+```
+
+#  Data  Preprocessing
+
+## Correlations with quantitative data
+
+
+```{r Correlations, fig.height=10, fig.width=15}
+
+cor(subset(Carseats, select=-c(ShelveLoc,Urban,US)))  # omit qualitative data
+
+```
+### price and sales has negative correlation with -0.44495073 percent
+### comprice and price has positive correlation
+### High correlation can affect models in a nagetive way. But in this analysis there is no high correlation to need to reomeve columns.
+
+
+
+## ENCODING
+
+```{r ENCODING  }
+
+dmy<-dummyVars("~ ShelveLoc +  Urban + US "
+               
+               , data = Carseats, fullRank = T)
+
+df_all_ohe<-as.data.frame(predict(dmy, newdata = Carseats))
+
+ohe_feats<-c('ShelveLoc',  'Urban','US' )
+
+CarseatsEncoded<-cbind(Carseats[,-c(which(colnames(Carseats) %in% ohe_feats))],df_all_ohe)
+ 
+head(CarseatsEncoded)
+str(CarseatsEncoded) # all columns are num and column number is 12 
+
+#R generates dummy variables for us from qualitative variables. The contrasts() function returns the coding that R uses.
+contrasts(ShelveLoc)
+
+#Good Medium
+#Bad       0      0
+#Good      1      0
+#Medium    0      1
+
+```
+
+
+
+## TRAIN TEST SPLIT
+
+### 1.Split the data set into a training set and a test set.
+### 2.Fit a regression tree to the training set. Plot the tree, and interpret the results. What test error rate do you obtain ?
+
+
+```{r Train test split, fig.height=15, fig.width=15}
+
+
+#Regression trees, Basic regression trees partition a data set into smaller groups and then fit a simple model (constant) for each subgroup
+
+set.seed(12)
+train = sample(1:nrow(CarseatsEncoded), nrow(CarseatsEncoded)*0.8)# train
+test_CarseatsEncoded=CarseatsEncoded[-train,]  #test  
+tree.CarseatsEncoded=tree(Sales~.,CarseatsEncoded,subset=train) ##Forming the decision tree using training set
+plot(tree.CarseatsEncoded)
+text(tree.CarseatsEncoded) #plot decsision tree 
+
+
+
+```
+
+### show decision tree branches
+```{r Train summary of tree }
+#tree.carseats #show decision tree branches 
+
+#ShelveLoc, Price and advertising, income and age seems important for the price 
+
+summary(tree.CarseatsEncoded)
+
+#daviance mean: , summed over all nodes. In other words, the sum of squared differences between predicted and observed values.2.4
+```
+
+### Error
+```{r rmse }
+#Root Mean Square Error (RMSE) is the standard deviation of the residuals (prediction errors). Residuals are a measure of how far from the regression line data points are; RMSE is a measure of how spread out these residuals are
+#When you remove sub-nodes of a decision node, this process is called Pruning. The opposite of pruning is Splitting.
+#In order to build a regression tree, you first use recursive binary splititng to grow a large tree on the training data, stopping only when each terminal node has fewer than some minimum number of observations. Recursive Binary Splitting is a greedy and top-down algorithm used to minimize the Residual Sum of Squares (RSS), an error measure also used in linear regression settings.
+
+CarseatsEncoded.test=CarseatsEncoded[-train,"Sales"]  #make data frames the same size and in order to prediction 
+tree.pred=predict(tree.CarseatsEncoded,newdata=test_CarseatsEncoded) # by using tree model,test data is predicted
+rmse  <-sqrt(mean((tree.pred-CarseatsEncoded.test)^2))
+#rmse 2.483749
+rmse 
+
+#str(tree.pred)
+#str(CarseatsEncoded.test)
+
+
+#table(tree.pred,CarseatsEncoded.test) 
+
+
+
+```
+
+
+
+
+### CROSS VALIDATION 
+### 3.Use cross-validation in order to determine the optimal level of tree complexity. Does pruning the tree improve the test error rate ?
+```{r CV }
+## Cross Validation
+
+# Optimal level of tree try to be fines with CV 
+# complexity. Does pruning the tree improve the test RMSE?
+
+RegTree <-tree.CarseatsEncoded
+
+
+set.seed(18)
+car.cv = cv.tree(RegTree)
+
+par(mfrow = c(1, 2))
+plot(car.cv$size, car.cv$dev, type = "b", xlab = "Tree Size", ylab = "CV-RMSE")
+plot(car.cv$k, car.cv$dev, type = "b", xlab = "Tree Size", ylab = "CV-RMSE")
+
+#best tree size seems that 7
+
+```
+
+
+
+
+```{r PRUNE }
+## Does pruning affect performance in a good way 
+
+# complexity. Does pruning the tree improve the test RMSE?
+par(mfrow = c(1,1))
+
+# It looks like 7 is the best size.
+
+prune.cartree <- prune.tree(RegTree, best = 7)
+plot(prune.cartree)
+text(prune.cartree, pretty = 0)
+summary(prune.cartree) #Residual mean deviance:  3.634
+
+
+tree.pred.bag=predict(prune.cartree,newdata=test_CarseatsEncoded) # by using tree model,test data is predicted
+rmse  <-sqrt(mean((tree.pred.bag-CarseatsEncoded.test)^2)) 
+
+
+
+#test_prediction_prune = predict(prune.cartree,newdata=test_CarseatsEncoded)
+#rmse_pruned<-sqrt(mean((test_prediction_prune-test_CarseatsEncoded)^2))
+
+
+# In this case prune tree does not give a better RMSE result. It goes down  2.483749 to   2.576008  It does not improve test RMSE
+
+
+
+plot(tree.pred.bag,test_CarseatsEncoded$Sales,
+     xlab = "Predicted", ylab = "Actual",
+     main = "Predicted vs Actual: Bagged Model, Test Data",
+     col = "dodgerblue", pch = 20)
+grid()
+abline(0, 1, col = "darkorange", lwd = 2)
+
+```
+
+
+```{r BAGGING  }
+### 4. Use the bagging approach in order to analyze this data. What test error rate do you obtain? Use the “importance()” function to determine which variables are most important. Use ntree=1000.
+
+#Fitting Bagging
+library(randomForest)
+library(MASS)
+set.seed(1)
+bag.car.tree=randomForest(Sales~.,data=CarseatsEncoded,subset=train
+                        ,ntree=1000,importance=TRUE)
+
+
+#Mean of squared residuals: 2.878761
+#% Var explained: 63.24
+
+importance(bag.car.tree)
+#most important value CompPrice and income
+
+
+
+```
+
+### 5. Use random forests to analyze this data. What test error rate do you obtain? Use the “importance()” function to determine which variables are most important. Use ntree=1000, mtry=3.
+
+### RANDOM FOREST 
+
+```{r RANDOM FOREST   }
+### 4. Use the bagging approach in order to analyze this data. What test error rate do you obtain? Use the “importance()” function to determine which variables are most important. Use ntree=1000.
+
+car_forest = randomForest(Sales ~ ., data = CarseatsEncoded, mtry = 3, 
+                             importance = TRUE, ntrees = 1000)
+car_forest
+
+
+#importance(car_forest)
+
+varImpPlot(car_forest, type = 1)
+# the importance list did not change compared to bagging 
+
+#◙Mean of squared residuals: 2.821978
+car_forest_tst_pred = predict(car_forest, newdata=test_CarseatsEncoded )
+
+
+
+plot(car_forest_tst_pred, test_CarseatsEncoded$Sales,
+     xlab = "Predicted", ylab = "Actual",
+     main = "Predicted vs Actual: Random Forest, Test Data",
+     col = "dodgerblue", pch = 20)
+grid()
+abline(0, 1, col = "darkorange", lwd = 2)
+
+```
+
+
+
+
+### 6. By using 10 fold cross validation and grid search detect best parameters of ntree and mtry for random forests. What test error rate do you obtain by using best parameters.
+```{r CSV }
+
+library(tree)
+library(ISLR)
+library(caret)
+#install.packages("gbm")
+library(gbm)
+#Find the best shrinkage parameter using 10K CV
+#mse<-rep(NA,10)
+#shrink<-c(0.001,0.01,0.05,0.1,0.15,0.2)
+#n.trees=100,interaction.depth=4
+
+set.seed(1)
+cvCarseat<-CarseatsEncoded[sample(nrow(CarseatsEncoded)),]
+folds <- cut(seq(1,nrow(cvCarseat)),breaks=10,labels=FALSE)
+
+mse<-rep(NA,10)
+shrink<-c(100,300,150,15,35)
+
+for (l in shrink){
+  for(i in 1:10){
+    set.seed(18)
+    #Segement your data by fold using the which() function 
+    testIndexes <- which(folds==i,arr.ind=TRUE)
+    testData <- cvCarseat[Sales, ]
+    trainData <- cvCarseat[-Sales, ]
+    
+    model=randomForest(Sales~.,data=trainData,
+              ntree=l)
+    yhat = predict(model,newdata=test_CarseatsEncoded)
+    mse[i]<-mean((yhat-test_CarseatsEncoded$Sales)^2)
+    #Use the test and train data partitions however you desire...
+  }
+  print(mean(mse))
+}
+
+##best result is for 150
+
+
+##control <- trainControl(method="repeatedcv", number=10, repeats=3, search="grid")
+##set.seed(1)
+##tunegrid <- expand.grid(.mtry=c(1:15))
+##rf_gridsearch <- train(Sales~., data=CarseatsEncoded, method="rf", metric="mse", tuneGrid=tunegrid, trControl=control)
+##print(rf_gridsearch)
+##plot(rf_gridsearch)
+
+#best mtryy 14    1.528421  0.7199859  1.222263
+
+```

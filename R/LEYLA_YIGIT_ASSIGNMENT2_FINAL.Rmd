@@ -1,0 +1,492 @@
+---
+title: "Assignment2"
+author: "Leyla Yigit"
+date: "July 30, 2019"
+output: html_document
+---
+
+
+### TASK DESCRIPTIONS
+
+###  For each question, present both the answer and the R code that helps you to produce that answer. Upload answers to the blackboard.
+###In the class, a classification tree was applied to the “Carseats” data set after converting “Sales” into a qualitative response variable. Now we will seek to predict “Sales” using regression trees and related ###approaches, treating the response as a quantitative variable.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Get Necessary Packages 
+
+```{r update R, eval=FALSE, include=FALSE}
+#install new version of R because of tree package is not avaible on 3.5.3 R version 
+install.packages("installr")
+library(installr)
+updateR() # new version of R is 3.6
+
+```
+
+
+```{r get packages, eval=FALSE, include=FALSE}
+install.packages("cluster",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("Rtsne",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("ggplot2",dependencies = TRUE, repos = "https://cran.r-project.org")
+install.packages("readr",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("dplyr",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tidyverse",dependencies = TRUE)
+install.packages("rlang",dependencies = TRUE)
+install.packages("mratios", dependencies = TRUE)
+install.packages("multcomp",dependencies = TRUE)
+install.packages("Rcpp")
+install.packages("caret",dependencies = TRUE)
+packageList <- c("randomForest", "plyr", "sqldf", "shiny", "lattice", "ggplot2", "googleplotvis", "caret", "e1071", "gbm", "glmnet", "kernlab", "ipred", "lda", "tm", "party", "nnet", "rpart", "Snowball", "openNLP", "stringr", "reshape2", "data.table")
+install.packages(packageList, dependencies=TRUE)
+install.packages('Rcpp', dependencies = TRUE)
+install.packages('data.table', dependencies = TRUE)
+install.packages('lattice', dependencies = TRUE)
+install.packages("tree",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("ISLR",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("FactoMineR",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("e1071",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("gbm",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("SmartEDA")
+install.packages("rattle",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("partykit",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("rpart",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+
+"tree" %in% rownames(installed.packages()) #whether a package is downloaded
+
+
+
+#start of parallelization
+library(doParallel) #start of parallelization
+cl <- makePSOCKcluster(4) #number of cores
+registerDoParallel(cl)
+
+
+stopCluster(cl)
+
+
+```
+
+
+## Check Data Set 
+```{r Data SET SHAPE   }
+library(tree)
+library(ISLR)
+library(caret)
+library("SmartEDA")
+library("caret")
+library("FactoMineR")
+library("e1071")
+library("gbm")
+
+library(psych)  #for general functions
+library(ggplot2)  #for data visualization
+
+library(rpart)  #for trees
+#library(rattle)    # Fancy tree plot This is a difficult library to install (https://gist.github.com/zhiyzuo/a489ffdcc5da87f28f8589a55aa206dd) 
+library(rpart.plot)             # Enhanced tree plots
+library(RColorBrewer)       # Color selection for fancy tree plot
+library(party)                  # Alternative decision tree algorithm
+library(partykit)               # Convert rpart object to BinaryTree
+library(pROC)   #for ROC curves
+
+
+attach(Carseats)
+
+Carseats$ShelveLoc <-NULL
+Carseats$Urban   <-NULL
+Carseats$US <-NULL
+
+ExpData(data=Carseats,type=2)
+
+
+#Train set initialized as 66% of data
+set.seed(5)
+train = sample(1:nrow(Carseats), nrow(Carseats)/1.5)
+test.c=Carseats[-train,2:ncol(Carseats)]
+test.c.l=Carseats[-train,1]
+train.c=Carseats[train,2:ncol(Carseats)]
+train.c.l=Carseats[train,1]
+
+
+#there is no missing values but there is factor values to be handled with
+```
+
+
+```{r Data SET  }
+library(tree)
+library(ISLR)
+library(caret)
+
+
+names(Carseats)
+
+#Column names of dataset
+#[1] "Sales"       "CompPrice"   "Income"      "Advertising" "Population"  "Price"       "ShelveLoc"   "Age"         "Education"   "Urban"       "US"   
+
+#head(Carseats)
+nrow(Carseats) #400 rows 
+NCOL(Carseats) # 11 cols 
+#check data types 
+
+str(Carseats, list.len=ncol(Carseats)) 
+
+(summary(Carseats))
+
+#histogram of outcome
+ggplot(data=Carseats, aes(x=Sales)) +
+  geom_histogram(binwidth=1, boundary=.5, fill="white", color="black") + 
+  geom_vline(xintercept = 8, color="red", size=2) +
+  labs(x = "Sales")
+#These columsn will be encoded
+#ShelveLoc 
+#Urban 
+#US
+
+#Sales here is quantitative variable 
+```
+
+#  Data  Preprocessing
+
+## Correlations with quantitative data
+
+
+```{r Correlations, fig.height=10, fig.width=15}
+
+cor(subset(Carseats, select=-c(ShelveLoc,Urban,US)))  # omit qualitative data
+
+```
+### price and sales has negative correlation with -0.44495073 percent
+### comprice and price has positive correlation
+### High correlation can affect models in a nagetive way. But in this analysis there is no high correlation to need to reomeve columns.
+
+
+
+
+## TRAIN TEST SPLIT
+
+### 1. Split the data set into a training set and a test set.
+
+
+```{r Train test split, fig.height=15, fig.width=15}
+#0.8 's the percentage of tra'n test and split
+
+set.seed(12)
+train = sample(1:nrow(Carseats), nrow(Carseats)*0.8)# train
+test=Carseats[-train,]  #test  
+
+#set all missing value as "Missing" 
+train[is.na(train)] <- "Missing"
+test[is.na(test)] <- "Missing"
+
+
+carseats=data.frame(Carseats)
+
+```
+
+
+
+### 2.Fit a boosted tree to the training set. Use 10 fold cross validation and grid search to detect best parameters.
+```{r gbm }
+
+library(gbm)
+
+bootControl <- trainControl(method = "boot",number = 10)
+set.seed(2)
+
+
+
+
+
+set.seed(1)
+boost.carseat=gbm(Sales~.,data=Carseats[train,],distribution="gaussian",n.trees=5000,interaction.depth=4) 
+# for classification problems use the option distribution="bernoulli"
+summary(boost.carseat)
+
+#Price and age are the most important variables.
+
+
+```
+### gbm Grid Search
+
+```{r gbm Grid Search }
+bootControl <- trainControl(method = "boot",number = 10)
+set.seed(2)
+
+# modify hyperparameter grid
+hyper_grid <- expand.grid(
+  shrinkage = c(.01, .05, .1),
+  interaction.depth = c(3, 5, 7),
+  n.minobsinnode = c(5, 7, 10),
+  bag.fraction = c(.65, .8, 1), 
+  optimal_trees = 0,               # a place to dump results
+  min_RMSE = 0                     # a place to dump results
+)
+
+# total number of combinations
+nrow(hyper_grid)
+
+# grid search 
+for(i in 1:nrow(hyper_grid)) {
+  
+  # reproducibility
+  set.seed(123)
+  
+  # train model
+  gbm.tune <- gbm(
+    formula = Sales~ .,
+    distribution = "gaussian",
+    data = Carseats[train,],
+    n.trees = 6000,
+    interaction.depth = hyper_grid$interaction.depth[i],
+    shrinkage = hyper_grid$shrinkage[i],
+    n.minobsinnode = hyper_grid$n.minobsinnode[i],
+    bag.fraction = hyper_grid$bag.fraction[i],
+    train.fraction = .75,
+    n.cores = NULL, # will use all cores by default
+    verbose = FALSE
+  )
+  
+  # add min training error and trees to grid
+  hyper_grid$optimal_trees[i] <- which.min(gbm.tune$valid.error)
+  hyper_grid$min_RMSE[i] <- sqrt(min(gbm.tune$valid.error))
+}
+
+hyper_grid %>% 
+  dplyr::arrange(min_RMSE) %>%
+  head(10)
+
+
+                       
+                    
+plot(gbm.tune, plotType = "level")
+
+
+```
+
+
+
+
+### CV 
+```{r aret using 10 fold CV }
+library("caret")
+
+#Caret using 10 fold CV
+
+fitControl <- trainControl(
+  method = "repeatedcv",
+  ## 10-fold CV
+  number = 10,
+  ## repeated one time
+  repeats = 1)
+
+
+gbmFit <-caret::train(Sales~ ., Carseats[train,], method = "gbm", 
+                trControl = fitControl, verbose = FALSE, 
+                tuneLength = 4)
+
+
+
+plot(gbmFit)                       
+plot(gbmFit, plotType = "level")
+gbmFit$results
+
+
+
+gbmFit$results %>% 
+  dplyr::arrange(RMSE) %>%
+  head(10)
+
+#best results are  1	shrinkage 0.1	interaction.depth 1	minobsinnode 10	trees 200	RMSE 1.263112	
+
+
+
+```
+
+### 3. Use your optimal parameters and your model from (2) to predict sales. Calculate root mean square error.
+```{r  optimal parameters  }
+library("xgboost")
+#shrinkage : 0.10	
+#sinteraction.depth : 3 
+#sn.minobsinnode: 3
+#sbag.fractio: 0.65 
+#s optimal_trees: 131 
+
+
+train_datatypes<-as.data.frame((lapply(train, class)))  # get train data data types
+test_datatypes<-as.data.frame((lapply(test, class)))  # get train data data types
+
+### CONVERT NUMBER  FROM FACTOR
+
+
+#list factor column names
+
+#TRAIN
+
+train_factor <- train[, sapply(train, is.factor)]
+
+ colnames(train_factor)
+
+#Convert columns to number
+
+cols.num <- c( colnames(train_factor))
+
+train[cols.num] <- sapply(train[cols.num],as.numeric)
+
+
+#TEST
+
+ test_factor <- test[, sapply(test, is.factor)]
+
+ colnames(test_factor)
+
+
+ 
+#create operational columns from test df
+
+install.packages("dplyr")
+
+library(dplyr)
+
+# for reproducibility
+set.seed(123)
+
+# train GBM model
+gbm.fit.final <- gbm(
+  formula = Sales~ .,
+  distribution = "gaussian",
+  data = Carseats[train,],
+  n.trees = 131,
+  interaction.depth = 3,
+  shrinkage =0.10	,
+  n.minobsinnode = 3,
+  bag.fraction = .65, 
+  train.fraction = 1,
+  n.cores = NULL, # will use all cores by default
+  verbose = FALSE
+  )  
+
+
+
+#test model 
+
+gbm_test<-predict(gbm.fit.final, newdata=test  ,n.trees = 131)
+
+gbm.resid<-gbm_test-test$Sales
+mean(gbm.resid^2)
+
+
+
+
+```
+
+
+
+### 4. Fit an extreme gradient boosted tree to the training set. Use 3 fold cross validation and grid search to detect best parameters.
+
+```{r XGBOOST, eval=FALSE, include=FALSE}
+library("xgboost")
+
+#convert regular data to xgboost data 
+ 
+dtrain <- model.matrix(~.+0,data = train.c)
+new_ts <- model.matrix(~.+0,data = test.c)
+
+
+
+
+param <- list(booster = "gblinear"
+              , objective = "reg:linear"
+              , subsample = 0.7
+              , max_depth = 5
+              , colsample_bytree = 0.7
+              , eta = 0.037
+              , eval_metric = 'mae'
+              , base_score = 0.012 #average
+              , min_child_weight = 100)
+
+
+# Perform xgboost cross-validation
+# Won't fit under kernel limit. Uncomment to run locally. 
+xgb_cv <- xgb.cv(data=dtrain,
+                 params=param,
+                nrounds=100,
+                prediction=TRUE,
+                maximize=FALSE,
+                folds=foldsCV,
+                early_stopping_rounds = 30,
+                print_every_n = 5
+)
+
+# Check best results and get best nrounds
+print(xgb_cv$evaluation_log[which.min(xgb_cv$evaluation_log$test_mae_mean)])
+nrounds <- xgb_cv$best_iteration
+
+################
+# Final model
+################
+
+xgb <- xgb.train(params = param
+                 , data = dtrain
+                 , nrounds = nrounds
+                 , verbose = 1
+                 , print_every_n = 5
+                               )
+
+###############
+# Results
+###############
+
+# Feature Importance
+importance_matrix <- xgb.importance(feature_names,model=xgb)
+
+
+# Predict
+preds <- predict(xgb,dtest)
+
+
+
+
+
+```
+
+
+
+
+
+### 5.  Use your optimal parameters and your model from (4) to predict sales. Calculate root mean square error.
+
+```{r XGBOOST Grid searcxh, eval=FALSE, include=FALSE}
+#caret based grid search
+library("caret")
+library(doParallel) #start of parallelization
+
+xgbGrid <-  expand.grid(nrounds = c(10,100), 
+                        max_depth = c(5, 10), 
+                        eta = 0.3,
+                        gamma = 0, colsample_bytree=1,
+                        min_child_weight=1, subsample=1)
+
+fitControl <- trainControl(## 2-fold CV
+  method = "repeatedcv",
+  number = 2,
+  ## repeated ten times
+  repeats = 1)
+
+gbmFit <- caret::train(dtrain, as.factor(labels), method = "xgbTree", 
+                trControl = fitControl, verbose = T, 
+                tuneGrid = xgbGrid)
+
+plot(gbmFit)                       
+plot(gbmFit, plotType = "level")
+gbmFit$results
+
+best(gbmFit$results, metric="Accuracy", maximize=T)
+tolerance(gbmFit$results, metric="Accuracy", maximize=T, tol=2)
+
+
+```
