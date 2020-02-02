@@ -1,0 +1,1684 @@
+---
+title: "Leyla Yigit Capstone"
+author: "Leyla Yigit"
+date: "August 12, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r packages , eval=FALSE, include=FALSE}
+
+install.packages("skimthru",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("visdat")
+install.packages("forecast")
+
+install.packages("SmartEDA",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("caret",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("FactoMineR",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("e1071",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("gbm",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("rpart",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("rpart.plot",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("partykit",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("pROC",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tree",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("ISLR",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+#devtools::install_github("ropensci/visdat")
+install.packages("MASS",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("adabag",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("randomForest",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+#install.packages("MASS",dependencies = TRUE,repos = "https://cran.r-project.org")library(caret)
+install.packages("ISLR",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("xgboost",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("data.table",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("mlr",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("Hmisc",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("stats4",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("doParallel ",dependencies = TRUE,repos = "https://cran.r-project.org")
+
+install.packages("leaps ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("elasticnet ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("glmnet ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("ISLR ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tree ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("caret ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("RColorBrewer ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("ggplot2 ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("gridExtra ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("wordcloud ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("devtools ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("psych ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("lubridate  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("plotly  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("RColorBrewer  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("choroplethrMaps  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("choroplethr  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tm  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("wordcloud  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("RColorBrewer  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("SmartEDA  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tree  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("MASS  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("FactoMineR  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("e1071  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("gbm  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("Hmisc  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("scales  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("zipcode  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("grid  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("NLP  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("openNLP  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("magrittr  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("qdap  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("ggplot2  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("grid  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("knitr  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("DataExplorer  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("tseries  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+install.packages("forecast  ",dependencies = TRUE,repos = "https://cran.r-project.org")
+                    
+install.packages("mlr") 
+install.packages("elasticnet")
+install.packages("choroplethrMaps")
+install.packages("choroplethr")
+install.packages("zipcode")
+install.packages("qdap")
+install.packages("colorRamps")
+install.packages("DataExplorer")  
+
+install.packages("corrplot")
+
+
+``` 
+
+
+
+
+
+```{r libraries  }
+
+library(corrgram)
+library("SmartEDA") 
+library("caret")
+library("FactoMineR")
+library("e1071")
+library("gbm")
+library(psych)  #for general functions
+library(ggplot2)  #for data visualization
+library(rpart)  #for trees
+#library(rattle)    # Fancy tree plot This is a difficult library to install (https://gist.github.com/zhiyzuo/a489ffdcc5da87f28f8589a55aa206dd) 
+library(rpart.plot)  # Enhanced tree plots
+library(RColorBrewer)# Color selection for fancy tree plot
+library(party)# Alternative decision tree algorithm
+library(partykit)  # Convert rpart object to BinaryTree
+library(pROC)   #for ROC curves
+library(tree)
+library(ISLR)
+library(MASS)
+library(randomForest)
+library(caret)
+library(FactoMineR)
+library(e1071) 
+library(gbm)
+library(xgboost)
+library(data.table)
+library(mlr)
+library(Hmisc)
+library(GGally)
+library(stats4)
+library(doParallel)
+library(plyr); library(dplyr)
+library(adabag) 
+library(leaps)
+library(elasticnet)
+library(glmnet)
+library(tree)
+library(ISLR)
+library(caret) 
+library(ggplot2) 
+library(RColorBrewer)
+library(gridExtra)
+library(wordcloud)
+library(dplyr)
+library(devtools)
+library(psych)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(RColorBrewer)
+library(choroplethrMaps)
+library(choroplethr)
+library(tm)
+library(wordcloud)
+library(RColorBrewer)
+
+library(tree)
+library(ISLR)
+library(MASS)
+library(randomForest)
+library(FactoMineR)
+library(e1071)
+library(gbm)
+library(xgboost)
+library(data.table)
+library(mlr)
+library(Hmisc)
+library(GGally)
+library(stats4)
+library(SmartEDA)
+library(doParallel)
+library(plyr); library(dplyr)
+library(adabag)
+library(leaps)
+library(elasticnet)
+library(glmnet) 
+
+
+
+
+library(scales) #for scaling dates
+library(zipcode) #for getting zipcode mapping
+library(grid)
+#NLP-specific imports
+library(NLP)
+library(openNLP)
+library(magrittr)
+library(qdap)
+library(tm)
+
+
+library(ggplot2) # Data visualization
+library(readr) # CSVfile I/O, e.g. the read_csv function
+library(dplyr) #for data management purposes
+library( knitr)
+
+
+
+
+
+library(wordcloud)
+library(dplyr)
+library(RColorBrewer)
+library (ggplot2)
+#install.packages("colorRamps")
+library(colorRamps)
+
+library(grid)
+library(stringr)
+library(tidyverse)
+
+library(DataExplorer)
+
+
+library(tseries)
+library(forecast)
+library(doParallel) #start of parallelization
+library(caret)
+library(e1071)
+
+
+
+``` 
+
+
+
+
+# EDA AND DATA PREPROCESSING
+
+## EDA
+
+### Get Data Set
+```{r Get Data SET }
+
+setwd("C:/Users/Baris/Desktop/LEYLA_CAPSTONE")
+getwd()
+
+
+#N/A's is not in a proper way in the data frame
+df<-read.csv("complaint_data.csv",na.strings=c(""," ","N/A","NA")) 
+
+
+
+``` 
+
+
+
+
+
+### First check of data
+```{r First check of data }
+names(df) #colnames of data frame 
+# [1] "Date.received"                "Product"                      "Sub.product"                  "Issue"                        "Sub.issue"                   
+# [6] "Consumer.complaint.narrative" "Company.public.response"      "Company"                      "State"                        "ZIP.code"                    
+#[11] "Tags"                         "Consumer.consent.provided."   "Submitted.via"                "Date.sent.to.company"         "Company.response.to.consumer"
+#[16] "Timely.response."             "Consumer.disputed."           "Complaint.ID"    
+
+dim(df) #it has 1356310   Variables 18 Observations
+
+#str(df) #except complaint_id all data consists from factor 
+
+
+#install.packages("DataExplorer") 
+
+library(DataExplorer)
+
+
+plot_str(df,type = "d")
+
+```
+
+### Look Data Explanation and Missing Variables
+```{r Get Data SET Missing Variables  }
+
+ExpData<-ExpData(data=df,type=2)
+
+print(ExpData) 
+
+#These features are high percentage of N/A's.This may suggests that we will remove these variables during the full analysis of our dataset, although we may consider viewing these variables in our EDA in order to study meaningful trends for the variables.
+#Tags* 0.86 
+#Consumer.complaint.narrative* 0.69 
+#Company.public.response* 0.64 
+#Consumer.consent.provided.* 0.45 
+
+#missing value plot
+plot_missing(df)
+
+
+
+
+```
+
+
+
+
+#Find  overall duplicates in complaints data
+```{r dublicates control for ID , fig.height=9, fig.width=17  }
+
+duplicate=duplicated(df$Complaint.ID.) #There is no dublicate Complaint.ID. in the dataset
+sum(duplicate) # gives total number of duplicates in data
+
+```
+
+### Check Zero Variance  
+```{r Zero Variance, fig.height=9, fig.width=17  }
+
+#Distinct value count of columns . Complaint_id is not meaningful for machine learning algorithmns.
+Total_Levels=sapply(df,function(x){as.numeric(length(levels(x)))})
+print(Total_Levels)
+
+#Complaint.Id column should be deleted because of zero variance.
+
+
+```
+
+### Feature Engineering 
+
+```{r  feature engineering, fig.height=9, fig.width=17  }
+# Feature engineering is done here because new features will be used in the Correlation analysis.
+##### FETURE ENGINEERING FOR DATE 
+#Date.received, Date.sent.to.company columns converted to date format
+df$Date.received <- as.Date(df$Date.received, format = "%m/%d/%Y")
+
+df$Date.sent.to.company <- as.Date(df$Date.sent.to.company, format = "%m/%d/%Y")
+
+
+df$Days.to.send.to.company <- difftime(df$Date.sent.to.company, df$Date.received , units = c("days"))
+
+df$Days.to.send.to.company <- as.numeric(df$Days.to.send.to.company)
+
+#Days.to.send.to.company new variable is created.
+
+
+# create receive month, year and day 
+df$Received.year  <- lubridate::year(df$Date.received)
+df$Received.month <- lubridate::month(df$Date.received) 
+df$Received.day   <- lubridate::day(df$Date.received)
+
+
+# create receive month, year and day 
+df$sent.year  <- lubridate::year(df$Date.sent.to.company)
+df$sent.month <- lubridate::month(df$Date.sent.to.company) 
+df$sent.day   <- lubridate::day(df$Date.sent.to.company)
+
+
+#Add a new column company complaint count 
+df <- df %>% group_by(Company) %>% mutate(count = n())
+
+df$Complaint.count.by.company <-df$count
+
+
+
+
+
+```
+
+
+
+
+### Statistical Analysis
+
+
+```{r  Correlation analysis , fig.height=9, fig.width=17  }
+#My dependent variable whether consumer disputed or not is a categorical variable if my independent variable is categorical , I should use Chi_square test for correlation.
+# Complint count is contnious. İf dependent variable continous and independent variable categorical, I should use ANOVA test. 
+#If dependent and independent variable is continous, linear regression should be used.
+#https://www.quora.com/How-can-I-measure-the-correlation-between-continuous-and-categorical-variables
+
+#When testing an hypothesis with a categorical explanatory variable and a quantitative response variable, the tool normally used in statistics is #Analysis of Variances, also called ANOVA.
+
+#complaint number and product
+
+tapply( df$Complaint.count.by.company, df$Product, mean) 
+
+#tapply( df2$Complaint.count.by.company, df2$Product, var) 
+
+#tapply( df2$Complaint.count.by.company, df2$Product, length) 
+
+boxplot(df$Complaint.count.by.company ~ df$Product)
+
+
+# correlation for days sent to company  and complaint count
+#The number of complaints increases as the number of days the complaint reaches the company
+
+cor(df$Complaint.count.by.company, df$Days.to.send.to.company)
+#correlated with -0.04567677 in a negative way. 
+
+#Correlation between consumer disputed and how many days 
+
+tapply( df$Complaint.count.by.company, df$Consumer.disputed., length) #No 1093514    Yes 141110
+
+boxplot(df$Complaint.count.by.company ~ df$Consumer.disputed. )
+
+
+
+
+#for 2 categorical var correlation , look at chi-square .Pearson's Chi-squared test
+
+chisq.test(df$Company,df$Consumer.disputed.) 
+ 
+#we do  not reject the null hypothesis that the consumer disputed  habit is  independent of company. 
+#p-value < 0.00000000000000022 p-value is less than   .05 significance level
+
+#product and Consumer.disputed.
+
+
+# Is there a connection between the company public response and the number of complaints received by that company? 
+tapply( df$Days.to.send.to.company, df$Company.response.to.consumer, length)  
+boxplot(df$Complaint.count.by.company ~ df$Company.response.to.consumer )
+#yes there is strong correlation. The number of complaints is increasing if the company is in a bad way to respond to the customer.
+
+
+# Is there a connection between the company public response and the number of complaints received by that company? 
+tapply( df$Complaint.count.by.company, df$Timely.response., length)   #TRUE 1206149  FALSE: 28475 There is no correlation between timely response and complaint number.
+boxplot(df$Complaint.count.by.company ~ df$Timely.response. )
+#yes there is strong correlation. The number of complaints is increasing if the company is in a bad way to respond to the customer.
+
+
+#Is there a correlation between timely_response and consumer_disputed and is it significant?
+chisq.test(df$Consumer.disputed., df$Timely.response.)  #Pearson's Chi-squared test with Yates' continuity correction
+#p-value < 0.00000000000000022
+#we do  not reject the null hypothesis that the consumer disputed  habit is  independent of timely response. They are correlated.
+
+
+```
+
+
+  
+
+
+
+
+### When complaints occur 
+```{r  When complaints occur, fig.height=9, fig.width=17  }
+
+#şikayetin alındıgı ve company'e iletildiği tarihlerin genel  dagılımı
+#observations of when the complaint was recieved and when it was sent to the company over time.
+
+dateRecFrame = summarise(group_by(df,Date.received),count = n())
+
+dateSentFrame = summarise(group_by(df,Date.sent.to.company),count = n())
+
+#plot time series
+dt = (ggplot()
+    + geom_line(data = dateRecFrame,aes(x = Date.received,y = count,color = "Date Received"),alpha =.5)
+    + geom_line(data = dateSentFrame,aes(x = Date.sent.to.company,y=count,color = "Date Sent To Company"),alpha = .2))
+dt = dt + scale_x_date()
+dt = dt + xlab("Date") + ylab("Frequency")
+dt + ggtitle("Compaints Observations Over Time")
+
+#After 2014 there is a rise in the complaints number. 
+# Date.received and Date.sent.to.company are highly correlated.Time difference between these 2 varibles can be more usefull by feature engineering.
+
+
+
+```
+
+
+### Distribution of the number of days between Date Recieved and Date Sent to Company
+
+```{r  Time.complaint.reach.company.log, fig.height=9, fig.width=17  }
+
+# Distribution of the number of days between Date Recieved and Date Sent to Company.
+#make log variable
+#Distribution of log(dateTimeDiff+2), where dateTimeDiff is the number of dayas between Date Recieved and Date Sent to Company
+Time.complaint.reach.company.log <- log(as.integer(df$Days.to.send.to.company) + 2)
+
+(ggplot(data=df, aes(Time.complaint.reach.company.log)) 
+            #get density
+            + geom_histogram(aes(y = ..density..)) + geom_density() 
+            + xlab("Log Time Difference")
+            + ggtitle("Distribution of\nLog Time Difference"))
+#distribution is largely right-skewed, with many complaints taking few or no days to get to the company and some complaints taking an extraordinary amount of time to get to the company.
+#This time can affect the dispute of customer. 
+
+
+
+```
+
+
+
+
+
+
+### IS there a time seasionality in the consumer complaints dataset. Does this affect model performance
+
+```{r dublicates  Complaint.ID., fig.height=9, fig.width=17  }
+#Since there is no null value in time-related columns, this analysis can be performed after N/A handling
+
+timedf <- df[c('Date.received', 'Product')]
+
+monthly <- timedf <- df %>% group_by(Received.year, Received.month)
+per_month <- monthly %>% dplyr::summarize(num_complaint = n())
+
+per_month$Date <- paste(per_month$Received.year, per_month$Received.month,sep = "-") #year and month concat
+per_month <- per_month[c("Date", "num_complaint")]
+
+cc <- ts((per_month$num_complaint),start = c(2012,1), end = c(2015, 12), frequency = 12)
+
+plot(cc, ylab = '', main = 'Consumer complaints 2012-2015', col = 'blue', bty = 'l')
+
+
+
+# Until the first half of 2013, the number of complaints had a seasonal effect and a fluctuating graph.
+#But after this point, especially after 2014, there is a rapid rise. The reason for this is the systemic problem caused by mortages in 2014.Most consumers complained about Mortgages that year
+#This data does not seem to have autocovariance but we will run an addional test to verify our intuition. 
+#Boxplots appear a clear increment of complaints rising as months progress to mid-year at that point starts to drop towards the end of the year. ##
+#The graphs shows that  appears regularity a bit more clear but still no clear drift.
+
+boxplot(cc ~ cycle(cc))
+
+plot(stl(cc, s.window = 'periodic', t.window = 15))
+
+
+seasonplot(cc, year.labels = T, year.labels.left = T, col = 1:4, labelgap = 0.4, 
+           main = 'Comparing Seasons' )
+
+adf.test(cc)  # -3.3502, Lag order = 3, p-value = 0.07491 alternative hypothesis: stationary .The test outputs a p-value greater than 0.05 therefore the data are not stationary. 
+
+
+
+```
+
+
+
+### most frequently complained product
+```{r  complained_product , fig.height=9, fig.width=17  }
+
+
+#Change "Credit reporting, credit repair services, or other personal consumer reports" product name as  consumer reports 
+# Change "Money transfer, virtual currency, or money service" product name as money service 
+# change  "Payday loan, title loan, or personal loan " product name  personal loan 
+
+NofRow <- function(df, c){
+    list1 <- unique(df[,c])
+    list2 <- list()
+    for(i in 1:length(list1)){
+        list2 <- c(list2, sum(df[,2] %in% list1[i]))
+    }
+    result <- data.frame(uniqueV = list1, count = unlist(list2))
+    return(result)
+}
+
+
+#product types
+table(df$Product)
+
+#product columns has 18 distinct values, from these categories what is frequently complained product 
+set.seed(1)
+clouddf1 <- NofRow(df, 2)
+wordcloud(clouddf1[,1], clouddf1[,2], scale = c(3,.8 ),max.words=200, random.order=FALSE, rot.per=0.35, colors=brewer.pal(8, "Dark2"))
+
+
+#create a bar chart that shows most frequently complained product
+
+# plot proportion of product by bar chart
+#Which proportion complaints raised against each product?
+ggplot(df, aes(reorder(Product,-table(df$Product)[Product]), fill = Product)) + geom_bar() + ggtitle("Number of Complaints by product") + xlab("product") + ylab("Number of Complaints") + theme(axis.text.x = element_text(angle = 90, size = 10, vjust = 0.1, face = "bold"), plot.title = element_text(size = 20, face = "bold", vjust = 2),axis.title.x = element_text(face = "bold", size = 15, vjust = 90),axis.title.y = element_text(face = "bold", vjust = 90, size = 15)) + theme(legend.position = "none")
+
+
+#check avaible color palettes 
+#display.brewer.all()
+
+
+
+
+colcount.product = length(unique(df$Product))#product column has 18 unique values 
+getPalette = colorRampPalette(brewer.pal(8, "Set2")) #expand color palette 
+
+
+
+g<-ggplot(df, aes(x=Product )) + geom_bar(aes(fill = factor(Product))) + 
+    scale_fill_manual(values = getPalette(colcount.product)) + coord_polar() + 
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.y = element_blank(), axis.text.x = element_text(size = 8),
+          axis.ticks.x = element_blank(), axis.ticks.y = element_blank(),
+          legend.position="none")
+
+#Mortgages,customer reports and debt collection are respectively most complaint products.
+#number of complaints per product is imbalanced. Consumers’ complaints are more biased towards Debt collection, Credit reporting and Mortgage.
+#We can learn from inbaleced data. The majority classes might be of our great interest. It is desirable to have a classifier that gives high prediction accuracy over the majority class, while maintaining reasonable accuracy for the minority class.
+
+```
+
+
+
+
+### most frequently complained company
+```{r  complained company , fig.height=9, fig.width=17  }
+
+#plot the top 10 companies by the number of complaints received
+complaint.by.company <- df %>% group_by(Company) %>% select(Company) %>% summarise(Count = n()) %>% arrange(desc(Count))
+
+
+
+ggplot(head(complaint.by.company, 10), aes(reorder(Company, -Count), Count, fill = Company)) + geom_bar(stat = "identity") + xlab("Company") + ylab("Number of COmplaints") + theme(axis.text.x = element_text(angle = 90, size = 10, vjust = 0.4, face = "bold"), plot.title = element_text(size = 20, face = "bold", vjust = 2),axis.title.x = element_text(face = "bold", size = 15, vjust = -0.35),axis.title.y = element_text(face = "bold", vjust =90, size = 15)) + theme(legend.position = "none") 
+
+
+
+
+```
+
+
+
+
+### most frequently complained company
+```{r  complained company , fig.height=9, fig.width=17  }
+
+#plot the top 10 companies by the number of complaints received
+complaint.by.company <- df %>% group_by(Company) %>% select(Company) %>% summarise(Count = n()) %>% arrange(desc(Count))
+
+
+
+ggplot(head(complaint.by.company, 10), aes(reorder(Company, -Count), Count, fill = Company)) + geom_bar(stat = "identity") + xlab("Company") + ylab("Number of COmplaints") + theme(axis.text.x = element_text(angle = 90, size = 10, vjust = 0.4, face = "bold"), plot.title = element_text(size = 20, face = "bold", vjust = 2),axis.title.x = element_text(face = "bold", size = 15, vjust = -0.35),axis.title.y = element_text(face = "bold", vjust =90, size = 15)) + theme(legend.position = "none") 
+
+
+
+
+```
+
+
+
+
+
+### How many consumer disputed 
+```{r  Consumer disputed , fig.height=9, fig.width=17  }
+
+
+
+prop.table(table(df$Consumer.disputed., exclude=NULL))
+
+#       No       Yes      <NA> 
+#0.4593123 0.1099025 0.4307853 
+```
+
+### Submitted Via
+
+
+```{r Submitted Via , warning=FALSE, fig.width=9, fig.height=5.5}
+# How complaints submitted
+
+prop.table(table(df$Submitted.via,exclude=NULL )) #there is no NA data in this column. 0.7416486925  of complaint is sent via WEB, 0.13 via Referral
+
+
+ggplot(df, aes(reorder(Submitted.via, -table(df$Submitted.via)[Submitted.via]), fill = Submitted.via)) + geom_bar() + xlab("Mode of Complaints Submission") + ylab("Number of Complaints") + scale_y_continuous(breaks = seq(0,350000,50000)) + theme(axis.text.x = element_text(angle = 50, size = 10, vjust = 0.4, face = "bold"), plot.title = element_text(size = 20, face = "bold", vjust = 2),axis.title.x = element_text(face = "bold", size = 15, vjust = -0.35),axis.title.y = element_text(face = "bold", vjust = 0.35, size = 15)) + theme(legend.position = "none")
+
+```
+
+
+
+
+
+
+# DATA PREPROCESSING
+
+#N/A HANDLING NA for Consumer Disputed Classification Analysis
+
+```{r HANDLING NA FOR subissue, fig.height=9, fig.width=17, include=FALSE}
+
+#Company.public.response* 0.64 
+#Consumer.consent.provided.* 0.46  
+#Consumer.disputed.* 0.43
+#Sub.issue* 0.42
+#Sub.product* 0.19
+#State* 0.02
+
+#$Consumer.disputed. <- NULL #null value'lar test sette predict edileceğinden burada replace edilez 
+
+
+# Tags* 0.88  is NULL so it is deleted.
+
+#OTHER N/A's will be replaced with MODE because data is consisted from factors.
+
+
+#FIND MODE of only one specific column 
+# Create the function. It will find mode by removing NAs. 
+Mode_1 <- function(x) {
+  ux <- na.omit(unique(x) )
+ tab <- tabulate(match(x, ux)); ux[tab == max(tab) ]
+}
+
+
+
+
+#result <- Mode_1(df$Consumer.consent.provided.)
+#print(result)
+
+#Replace NA's with mode Mode value is found below function
+df$Sub.issue[is.na(df$Sub.issue)] <- "Information belongs to someone else"
+
+df$Sub.product[is.na(df$Sub.product)] <- "Credit reporting"
+
+df$State[is.na(df$State)] <- "CA" #replace N/A with mode 
+
+
+
+
+```
+
+
+
+
+
+
+
+###  "Whether consumer disputed or not" Classification Modelling
+
+### PREPARE NEW DATa FRAME for Classification
+
+```{r PREPARE NEW DATA FRAME , fig.height=9, fig.width=17  }
+
+#Dimensionality Reduction
+
+#The model is simplified by taking column values that define the data almost above 95 percent
+
+#Top 10 count of products that gets complaint,  make up nearly 96 percent of data.
+# The first 108 issue receiving the most complaints make up 98 percent of the data. Therefore, we can simplify the model by taking the first 108 sub
+
+
+#ID and date columns are deleted.Consumer.complaint.narrative column will be used for text classification. Zip code is not necessary. correlation analysis can be made by using state
+# Tags* 0.88  is NULL so can be deleted.
+##Zip.code and state is about location, because of that Zip.code is deleted.
+#Company","Sub.product","Sub.issue" columns have too0 many distinct values to be encoded. 
+
+
+#
+State_cnt <- df %>% group_by(State) %>% select(State) %>% summarise(Count = n()) %>% arrange(desc(Count))
+
+
+
+dropcols<-c("Date.received","Date.sent.to.company","Complaint.ID","Consumer.complaint.narrative","ZIP.code","Tags")
+
+df2 <-df %>% select(-one_of(dropcols))
+
+
+#Product # Products that "consumer disputed" is not null is selected tfor test and train, En cok şikayet alan ve Consumer Disputed olan products 
+pro_list2<-c("Mortgage")
+
+df2 <-df2[(df2$Product %in% (pro_list2)), ]
+
+#### ISSUE 
+#The first 30 issue  receiving the most complaints make up 88 percent of the data. Therefore, we can simplify the model by taking the first 40 issue 
+
+#Issue_list<-c(df2 %>% group_by(Issue) %>% select(Issue) %>% summarise(Count = n()) %>% arrange(desc(Count)) %>% top_n(30))
+#df2 <-df2[(df2$Issue %in% (Issue_list$Issue)), ]
+
+
+###### Sub.issue
+#Last 10 columns in Sub.issue column has nearly zero variance because of firt 30  subissue will be modelled 
+# The first 30 subissue receiving the most complaints make up 82 percent of the data. Therefore, we can simplify the model by taking the first 30 sub
+#<subissue_list<-c(df2 %>% group_by(Sub.issue) %>% select(Sub.issue) %>% summarise(Count = n()) %>% arrange(desc(Count)) %>% top_n(25))
+#df2 <-df2[(df2$Sub.issue %in% (subissue_list$Sub.issue)), ]
+
+
+#Subproduct 
+# The first 30 product receiving the most complaints make up 96 percent of the data. Therefore, we can simplify the model by taking the first 30 subproduct
+#Sub.product_list<-c(df2 %>% group_by(Sub.product) %>% select(Sub.product) %>% summarise(Count = n()) %>% arrange(desc(Count)) %>% top_n(30))
+#df2 <-df2[(df2$Sub.product %in% (Sub.product_list$Sub.product)), ]
+
+#STATE
+# The first 25 state receiving the most complaints make up 90 percent of the data. Therefore, we can simplify the model by taking the first 52
+#state_list<-c(df2 %>% group_by(State) %>% select(State) %>% summarise(Count = n()) %>% arrange(desc(Count)) %>% top_n(25) )
+#df2 <-df2[(df2$State %in% (state_list$State)), ]
+  
+
+
+
+
+
+
+```
+
+
+
+
+### DEAL N/A s
+```{r deal with factors, fig.height=9, fig.width=17  }
+# Missing value replacement with MODE  FUNCTION for all columns
+# Missing value replacement with MODE 
+Mode <- function (x, na.rm) {
+  xtab <- table(x)
+  xmode <- names(which(xtab == max(xtab)))
+  if (length(xmode) > 1) xmode <- ">1 mode"
+  return(xmode)
+}
+
+# TEST set NA replacement
+for (var in 1:ncol(df2)) {
+  if (class(df2[,var])=="integer") {
+    df2[is.na(df2[,var]),var] <- mean(df2[,var], na.rm = TRUE)
+  } else if (class(df2[,var]) %in% c("character", "factor")) {
+    df2[is.na(df2[,var]),var] <- Mode(df2[,var], na.rm = TRUE)
+  }
+}
+
+
+#control N/A s 
+
+ExpData(df2, type=2)
+
+ 
+
+df2$Product<-NULL
+
+
+
+```
+
+
+
+###  Deal with Factors with Feature Engineering
+
+
+```{r Feature Engineering  for deal with factors, fig.height=9, fig.width=17  }
+
+#CREATE NEW BOOLEAN FEATURES 
+
+#Consumer.disputed. “Consumer disputed?” string value is transformed into binary boolean values. 
+
+#Unique values in each of the columns of a data frame
+rapply(df2,function(x)length(unique(x))) #unique value numbers 
+value_of_unique <- lapply(df2, unique) # each unique value
+
+
+#deete rows NA in consumer disputed 
+# omit rows where 'x' has a missing value
+
+
+#unique(df2$Consumer.disputed.)
+
+#Timely response 
+
+
+#Timely response 
+df2$Timely.response. <- ifelse(df2$Timely.response. == "Yes", TRUE, FALSE) 
+
+df2$Consumer.disputed. <- ifelse(df2$Consumer.disputed. == "Yes", 1, 0) 
+
+
+df2 <- df2[(df2$Consumer.disputed. %in% c(1,0)), ] #all modeling  will be done for YEs and NO values
+
+#unique(df2$Consumer.disputed.) #after converting integer  variable 2-N/A  0: No  1 :Yes 
+
+
+
+
+#Add a new column company complaint count 
+df2 <- df2 %>% group_by(Company) %>% mutate(count = n())
+
+df2$Complaint.count.by.company <-df2$count
+
+
+
+
+#product converted factor from character 
+#df2$Product <- as.factor(as.character(df2$Product))
+
+#Timely response  convert integer from logical 
+df2$Timely.response.<-as.integer(as.logical(df2$Timely.response.))
+
+
+#factor values will be encoded 
+
+
+df2$Company<-NULL #company column has high variance 
+df2$State<-NULL  #company column has zero variance
+
+
+ExpData(df2,type=2)
+
+
+
+
+```
+
+
+
+
+
+
+### LOOK MODEL DATAFRAME AND CHECK ZERO VARIANCE, FACTOR AND NUMERIC 
+```{r   LOOK MODEL DATAFRAME , fig.height=9, fig.width=17  }
+#TRAIN and TEST SPLIT 
+
+
+#The date columns in the original dataset are no longer needed. They became more usable with feature engineering.
+df2$Date.received <-NULL #feature engineering done
+df2$Tags<-NULL #Tags* 0.86 NA number proportion because of that it is 
+df2$count <-NULL
+df2$Company <- NULL
+df2$count <- NULL
+
+
+#these values actually categorical.
+#df2$Received.day<-NULL 
+#df2$Received.month<-NULL
+#df2$Received.year<-NULL
+
+#df2$sent.day<-NULL 
+#df2$sent.month<-NULL
+#df2$sent.year<-NULL
+
+### Numerics and factors 
+numeric.names <- names(df2[, sapply(df2, is.numeric)])
+numeric <- df2[, numeric.names]
+colnames(numeric)    #8 numeric name
+
+
+#[1] "Days.to.send.to.company"    "Received.year"              "Received.month"             "Received.day"               "sent.year"                  "sent.month"                
+#[7] "sent.day"                   "Complaint.count.by.company"
+
+
+
+factor.names <- names(df2[, sapply(df2, is.factor)])
+factor <- df2[, factor.names] 
+colnames(factor) #  9 factor name
+
+#[1] "Sub.product"                  "Issue"                        "Sub.issue"                    "Company.public.response"     
+#[5] "State"                        "Consumer.consent.provided."   "Submitted.via"                "Company.response.to.consumer"
+#[9] "Consumer.disputed." 
+
+
+
+#NEAR ZERO VARIANCE CONTROL
+# count of unique values in numeric features
+#https://www.r-bloggers.com/near-zero-variance-predictors-should-we-remove-them/
+numeric.unique <- apply(numeric, 2, function(x) nlevels(as.factor(x)))
+
+x = nearZeroVar(df2, saveMetrics = TRUE) #
+ 
+str(x, vec.len=11) #we see that none of columsn can be considered as zero variance
+
+
+#describe(numeric) # detailed summary
+summary(numeric)
+
+summary(factor)
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+### CORRELATION MATRIX FOR NUMERICS 
+
+```{r CORRELATION MATRIX FOR NUMERICS, echo=TRUE, fig.height=9, fig.width=17}
+
+#correlation for numeric values 
+
+# Correlation matrix of numeric features
+correlation.matrix <- cor(numeric)
+
+print(correlation.matrix)
+
+corrs <- setDT(melt(correlation.matrix))[order(value)]
+cor_Consumer.disputed. <- subset(corrs, corrs$Var2 == "Consumer.disputed.") # correlations with targ
+
+print(cor_Consumer.disputed.)
+
+
+
+#CORRELATION GRAPH for numeric data  
+
+
+
+corrgram(numeric, order=FALSE, 
+                  lower.panel=panel.shade,
+         upper.panel=panel.pie, 
+         text.panel=panel.txt,
+       main="Correlation between numeric features")
+
+ 
+
+
+#second gragh 
+corrgram(df2, order=FALSE,
+         upper.panel=panel.cor, main="Correlation between numeric features")
+
+
+
+
+
+#Received month and send month is highly correlated because most of the complaints sent to company between 1 month after received 
+#month variable can be deleted from the model wirh 0.96 correlation 
+
+#recevied and sent dates are highly correlated each other one of them will be deleted. 
+#Consumer disputed is highly correalted wiht year features because we know that, most of the complaints come after 2014. These features will be kept. 
+
+
+df2$Received.month<-NULL #threshold 90 percent
+df2$Received.day<-NULL  #because it is higly correlated  <-NULL #because it is higly correlated 
+df2$Received.year<-NULL  #because it is higly correlated  <-NULL #because it is higly correlated 
+df2$sent.year <-NULL #because it is higly correlated  <-NULL #because it is higly correlated 
+df2$sent.month<-NULL #because it is higly correlated  <-NULL #because it is higly correlated 
+
+
+```
+
+
+
+
+```{r HANDLING NAs, fig.height=9, fig.width=17}
+
+# Missing value replacement with MODE  FUNCTION for all columns
+# Missing value replacement with MODE 
+Mode <- function (x, na.rm) {
+  xtab <- table(x)
+  xmode <- names(which(xtab == max(xtab)))
+  if (length(xmode) > 1) xmode <- ">1 mode"
+  return(xmode)
+}
+
+# TEST set NA replacement
+for (var in 1:ncol(df2)) {
+  if (class(df2[,var])=="integer") {
+    df2[is.na(df2[,var]),var] <- mean(df2[,var], na.rm = TRUE)
+  } else if (class(df2[,var]) %in% c("character", "factor")) {
+    df2[is.na(df2[,var]),var] <- Mode(df2[,var], na.rm = TRUE)
+  }
+}
+
+
+
+
+#look mode of values
+#result <- Mode_1(x_test$Company.public.response)
+#print(result)
+
+
+
+
+#Replace NA's with mode Company.public.response 
+df2$Company.public.response[is.na(df2$Company.public.response)] <- "Company has responded to the consumer and the CFPB and chooses not to provide a public response"
+
+
+#Replace NA's with mode Consumer.consent.provided. 
+df2$Consumer.consent.provided.[is.na(df2$Consumer.consent.provided.)] <- "Consent provided"
+
+
+#check is there any missing 
+
+ plot_missing(df2)
+
+```
+
+
+
+
+### ENCODING, AND FEATURE NAME NORMALIZATION
+```{r  ENCODE , fig.height=9, fig.width=17  }
+
+
+df2$Received.month<-NULL
+df2$Received.day<-NULL
+df2$Received.year<-NULL
+df2$sent.year <-NULL #because it is higly correlated 
+df2$Sub.issue<-NULL # because of space problem 
+
+#ExpData(df2,type=2)
+
+#Create validation set
+library(caret)
+set.seed(1)
+#unique(df2$Consumer.disputed.)
+trainIndex <- createDataPartition(df2$Consumer.disputed., p = .60, list = FALSE, times = 1)
+
+
+train <- df2[ trainIndex,]
+test  <- df2[-trainIndex,]
+
+
+#dim(train) #516414     14
+#dim(test)  #172138     14 
+#x <- train %>% group_by(Sub.issue) %>% select(Sub.issue) %>% summarise(Count = n()) %>% arrange(desc(Count))
+
+
+#one hot encoding should not be done for consumer disputed coloumn 
+# One Hot Encoding
+train <- model.matrix(~.+0,data = train)
+train <- as.data.frame(train)
+#after encode train:112069 562
+
+
+test <- model.matrix(~.+0, data = test)
+test <- as.data.frame(test)
+#after encode test: 163155 562
+
+
+
+
+
+
+#Column names normalization 
+cols_test <- colnames(test)
+cols_test <- chartr(",", ".", cols_test)
+cols_test <- chartr(" ", ".", cols_test)
+cols_test <- chartr("/", ".", cols_test)
+cols_test <- chartr("(", ".", cols_test)
+cols_test <- chartr(")", ".", cols_test)
+cols_test <- chartr("'", ".", cols_test)
+cols_test <- chartr("-", ".", cols_test)
+
+colnames(test) <- cols_test
+
+cols_train <- colnames(train)
+cols_train <- chartr(",", ".", cols_train)
+cols_train <- chartr(" ", ".", cols_train)
+cols_train <- chartr("/", ".", cols_train)
+cols_train <- chartr("(", ".", cols_train)
+cols_train <- chartr(")", ".", cols_train)
+cols_train <- chartr("'", ".", cols_train)
+cols_train <- chartr("-", ".", cols_train)
+colnames(train) <- cols_train
+
+
+
+#◘find difference of colnames after encode 
+#delete because of encode colnames difference 
+#x_test$"ProductCreditreporting,creditrepairservices,orotherpersonalconsumerreports"<-x_test$"ProductCreditreporting" 
+#x_test$ProductCreditcardorprepaidcard<-NULL
+#x_test$"ProductCheckingorsavingsaccount"<-NULL
+#x_train$"ProductBankaccountorservice"<-NULL
+#x_train$"ProductConsumerLoan"<-NULL
+
+#Tekrar factor kolonlar bulunur
+
+#train
+
+train.factors <- train[, sapply(train, is.factor)]
+
+colnames(train.factors)
+
+#test
+
+test.factors <- test[, sapply(test, is.factor)]
+
+colnames(test.factors)
+
+
+
+#convert number 
+#train
+
+cols.num_train <- c( colnames(train.factors))
+train[cols.num_train] <- sapply(train[cols.num_train],as.numeric)
+
+#convert number 
+#test 
+
+cols.num_test <- c( colnames(test.factors))
+train[cols.num_test] <- sapply(test[cols.num_test],as.numeric)
+
+
+
+```
+
+
+
+
+
+
+
+### HANDLING NAs with missing keyword  
+```{r map NA's missing , eval=FALSE, fig.height=9, fig.width=17, include=FALSE}
+#set all missing value as "Missing" 
+
+
+
+train[is.na(train)] <- "Missing"
+test[is.na(test)] <- "Missing"
+#check missing values 
+```
+
+
+
+
+
+#TRAIN TEST SPLIT 
+
+```{r TRAIN TEST SPLIT , eval=FALSE, fig.height=9, fig.width=17, include=FALSE}
+#TRAIN TEST SPLIT 
+y_train <- train[ ,"Consumer.disputed."]
+x_train <- train
+x_train$"Consumer.disputed."<- NULL
+
+
+#y_test <- test[ ,"Consumer.disputed."]
+x_test <- test
+
+#df2$Consumer.disputed. <- ifelse(df2$Consumer.disputed. == 2,"NA" ) 
+
+#Attaching new variable to the data frame
+x_test=data.frame(x_test,"Consumer.disputed.")
+y_test <- x_test[ , "Consumer.disputed."]
+x_test <- x_test
+x_test$Consumer.disputed.<- NULL
+
+x_test$X.Consumer.disputed..<- NULL
+
+
+
+#colnames(x_train)
+
+#colnames(x_test)
+
+#Delete column differences because of encoding 
+#x_test$"Sub.issueCalled.before.8am.or.after.9pm"<-NULL
+#x_test$"Sub.issueCalled.before.8am.or.after.9pm"<-NULL
+#x_test$"X.Consumer.disputed.."<-NULL
+x_test$"Sub.productTravelerâ..s.Cashierâ..s.checks"<-NULL
+#x_test$"NA."<-NULL
+#x_#test$"Sub.issueCalled.outside.of.8am.9pm"<-NULL
+#x#_train$Sub.issueCalled.before.8am.or.after.9pm<-NULL
+#x_train$"Sub.issueCalled.outside.of.8am.9pm"<-NULL
+x_train$"Sub.productTravelerâ€™s.Cashierâ€™s.checks"<-NULL
+
+
+#rename(x_test,"Consumer.disputed." = 'Consumer.disputed')
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+# MODELLING 
+
+###  XGBOOST Classification  #################
+```{r XGBOOST Claasification  , fig.height=15, fig.width=15}
+#XGBOOST MODEL PARAMETERS 
+#nrounds: 
+#eta (0,1) 0.3: learning rate
+#gamma (0,Inf) 0: A node is split only when the resulting split gives a positive reduction 
+#in the loss function. Gamma specifies the minimum loss reduction required to make a 
+#split.
+#max depth (0, Inf) 6: depth of trees
+#min_child_weight (0,Inf) 1: it refers to the minimum number of instances required in a child node. 
+#In classification, if the leaf node has a minimum sum of instance weight 
+#(calculated by second order partial derivative) lower than min_child_weight, 
+#the tree splitting stops.
+#subsample (0,1) 1: the number of samples (observations) supplied to a tree.
+#colsample_bytree (0,1) 1: Denotes the fraction of columns to be randomly samples for each tree.
+#lambda 0: L2 regularization (Ridge Regression)
+#alpha 1: L1 regularization (Lasso Regression)
+#objective: reg:linear, binary:logistic, multi:softmax, multi:softprob
+#eval_metric: rmse->regression, error->classification
+# rmse ? root mean square error
+# mae ? mean absolute error
+# logloss ? negative log-likelihood
+# error ? Binary classification error rate (0.5 threshold)
+# merror ? Multiclass classification error rate
+# mlogloss ? Multiclass logloss
+# auc: Area under the curve
+
+#make dependent variables to dataframe 
+y_train<-as.data.frame(y_train)
+y_test<-as.data.frame(y_test)
+dim(x_train)  #260906    332
+dim(y_train) #260906      1
+dim(x_test) # 111817    332
+dim(y_test) #111817      1 
+
+
+#Whether there is a factor or not 
+factor.names <- names(x_train[, sapply(x_train, is.factor)])
+factor <- x_train[, factor.names] 
+colnames(factor) #  9 factor name
+
+
+
+#make all dataframe matrix 
+x_train_m <- as.matrix(x_train)
+x_test_m <- as.matrix(x_test)
+y_train_m<- as.matrix(y_train)
+y_test_m <- as.matrix(y_test)
+
+
+
+
+#convert regular data to xgboost data 
+dtrain.c <- xgb.DMatrix(data = x_train_m,label = y_train_m)
+
+dtest.c <- xgb.DMatrix(data =x_test_m,label=y_test_m)
+
+#set.seed(5)
+#fitControl <- trainControl(
+#  method = "repeatedcv",
+ # number = 5, repeats = 2)
+
+
+#cluster cores so there will be no ram problem 
+#library(doParallel) #start of parallelization
+#cl <- makePSOCKcluster(4) #number of cores
+#registerDoParallel(cl)
+
+
+#stopCluster(cl)
+#showConnections()
+
+
+#with grid search and 10K fold CV best parameters will be found 
+
+bootControl <- trainControl(method = "boot",number = 10)
+set.seed(2)
+
+
+
+
+c <- makeCluster(4)
+
+#socket cluster with 3 nodes on host ‘localhost’
+# stopCluster(cl)
+
+
+
+#grid search and 10 K fold used together to find best parameters.
+xgbGrid <-  expand.grid(nrounds = c(10,15), 
+                        max_depth = c(5,8), 
+                        eta = 0.3,
+                        gamma = 0, colsample_bytree=1,
+                        min_child_weight=(1), subsample=1)
+
+fitControl <- trainControl(## 2-fold CV
+  method = "repeatedcv",
+  number = 10,
+  ## repeated ten times
+  repeats = 1)
+
+#FIT XBG BOOST CLASSIFICATION
+gbmFit <- caret::train(x_train_m, as.factor(y_train_m), method = "xgbTree", 
+                trControl = fitControl, verbose = T, 
+                tuneGrid = xgbGrid)
+
+
+
+
+
+
+plot(gbmFit)                       
+plot(gbmFit, plotType = "level")
+XGBOOST_RESULTS<-gbmFit$results
+print(XGBOOST_RESULTS)
+
+best(gbmFit$results, metric="Accuracy", maximize=T)
+tolerance(gbmFit$results, metric="Accuracy", maximize=T, tol=2)
+
+#stopCluster(cl)
+#importance of the model 
+
+print(gbmFit)
+
+
+
+
+
+# fitting XGB classifier
+set.seed(5)
+params.xgb.c <- list(booster = "gbtree", objective = "reg:logistic", 
+               eta=0.3, gamma=0, max_depth=8, min_child_weight=1, 
+               subsample=1, colsample_bytree=0.8)
+
+
+xgbBest.c <- xgb.train (params = params.xgb.c, data = dtrain.c, 
+                   nrounds = 15)
+
+
+
+
+#model model name fitted XGBOOST with best parameters is xgbBest.c 
+
+```
+
+
+### PREDICT XGBOOST MODEL  
+
+```{r XGBOOST PREDICTION   , fig.height=15, fig.width=15}
+
+PREDICT_XGB <- gbmFit %>% predict(x_test)
+
+
+PREDICT_XGB<-as.data.frame(PREDICT_XGB)
+y_test<-as.data.frame(y_test)
+
+
+
+table(PREDICT_XGB,y_test) # test$target
+mean(PREDICT_XGB==y_test)
+#> mean(PREDICT_XGB==y_test)
+#TEST SET MODEL PREDICTION PERFORMANCE ##[1] 0.7943658 
+
+#0.7935616 train set error difference is lower
+
+
+
+
+
+
+# Accuracy : 1                    
+  #               95% CI : (1, 1)               
+  #  No Information Rate : 0.8123               
+ #   P-Value [Acc > NIR] : < 0.00000000000000022
+                                               
+          #        Kappa : 1                    
+                                               
+ #Mcnemar's Test P-Value : NA                   
+                                             
+         #   Sensitivity : 1.0000               
+         #   Specificity : 1.0000               
+         # Pos Pred Value : 1.0000               
+         # Neg Pred Value : 1.0000               
+          #    Prevalence : 0.8123               
+         # Detection Rate : 0.8123               
+    #Detection Prevalence : 0.8123               
+      # Balanced Accuracy : 1.0000               
+       #                                         
+       # 'Positive' Class : 0      
+
+
+# important features
+mat <- xgb.importance (feature_names = colnames(x_train),model = xgbBest.c)
+xgb.plot.importance (importance_matrix = mat[1:20])
+
+
+
+
+
+
+```
+
+
+
+
+
+###  gbm 
+
+```{r gbm with  Grid Search, eval=FALSE, fig.height=15, fig.width=15, include=FALSE}
+################# AdaBoost (Bagged) Classification #################
+
+#make dependent variables to dataframe 
+y_train<-as.data.frame(y_train)
+y_test<-as.data.frame(y_test)
+dim(x_train)  #260906    332
+dim(y_train) #260906      1
+dim(x_test) # 111817    332
+dim(y_test) #111817      1 
+
+
+#make all dataframe matrix 
+x_train_m <- as.matrix(x_train)
+x_test_m <- as.matrix(x_test)
+y_train_m<- as.matrix(y_train)
+y_test_m <- as.matrix(y_test)
+
+
+set.seed(5)
+fitControl <- trainControl(
+  method = "repeatedcv",
+  number = 5, repeats = 2)
+
+
+
+gbmGrid2 <-  expand.grid(
+                        n.trees = c(10,25),
+                        interaction.depth = c(3,5),
+                        shrinkage = 0.01,
+                        n.minobsinnode=1
+                        )
+
+
+#FIT GBM  CLASSIFICATION
+gbmFit <- caret::train(x_train_m, as.factor(y_train_m), method = "gbm", 
+                trControl = fitControl, verbose = T, 
+                tuneGrid = gbmGrid2)
+
+
+
+
+
+plot(gbmFit)                       
+plot(gbmFit, plotType = "level")
+XGBOOST_RESULTS<-gbmFit$results
+print(XGBOOST_RESULTS)
+
+best(gbmFit$results, metric="Accuracy", maximize=T)
+tolerance(gbmFit$results, metric="Accuracy", maximize=T, tol=2)
+
+#stopCluster(cl)
+#importance of the model 
+
+print(gbmFit)
+
+
+# the caret package the get the model preformance in the best iteration.
+
+#stopCluster(c2)
+
+
+
+                       
+                    
+
+
+```
+
+
+
+
+###  Random forest 
+
+```{r Random Forest without CV and Grid search, eval=FALSE, fig.height=15, fig.width=15, include=FALSE}
+################# AdaBoost (Bagged) Classification #################
+library(randomForest)  
+library(e1071)  
+library(caret)  
+library(ggplot2)  
+set.seed(123) 
+
+
+#make dependent variables to dataframe 
+y_train<-as.data.frame(y_train)
+y_test<-as.data.frame(y_test)
+dim(x_train)  #260906    332
+dim(y_train) #260906      1
+dim(x_test) # 111817    332
+dim(y_test) #111817      1 
+
+
+#make all dataframe matrix 
+x_train_m <- as.matrix(x_train)
+x_test_m <- as.matrix(x_test)
+y_train_m<- as.matrix(y_train)
+y_test_m <- as.matrix(y_test)
+
+
+
+#Fit Random Forest Model
+rf = randomForest(as.factor(y_train_m) ~ ., ntree = 10 ,data = x_train_m)
+
+#check model 
+summary(rf)  
+
+
+                       
+# Variable Importance
+varImpPlot(rf,  
+           sort = T,
+           n.var=10,
+           main="Top 10 - Variable Importance") 
+
+
+# Predicting response variable
+RF_PREDICT = predict(rf , x_test_m)
+
+
+RF_PREDICT <-as.data.frame(RF_PREDICT )
+y_test<-as.data.frame(y_test)
+
+
+table(RF_PREDICT,y_test) # test$target
+mean(RF_PREDICT==y_test)
+
+
+
+
+#0.771042
+
+```
+
+
+
+
+### Random Forest with Grid Search 
+```{r Random Forest without CV and Grid search, eval=FALSE, fig.height=15, fig.width=15, include=FALSE}
+################# AdaBoost (Bagged) Classification #################
+ 
+#15 random values of mtry at each time tunning. We have 15 values because of tunning length is 15.
+#In manually tunning we continualy keep caret because its result is aligned with previous model and provide a feasible comparision. Moreover, keeping repeated cross validation in caret can reduces model’s overfiting.
+
+#This approach create many model caret scenarios with different manual parameters and compare its accuracy. Let look at example we do this to evaluate different ntree while hodling mtry constant.
+
+
+#make dependent variables to dataframe 
+y_train<-as.data.frame(y_train)
+y_test<-as.data.frame(y_test)
+dim(x_train)  #260906    332
+dim(y_train) #260906      1
+dim(x_test) # 111817    332
+dim(y_test) #111817      1 
+
+
+#make all dataframe matrix 
+x_train_m <- as.matrix(x_train)
+x_test_m <- as.matrix(x_test)
+y_train_m<- as.matrix(y_train)
+y_test_m <- as.matrix(y_test)
+
+
+
+
+#mtry: Number of variables randomly sampled as candidates at each split.
+#ntree: Number of trees to grow.
+
+# Create model with default paramters
+control <- trainControl(method="repeatedcv", number=10, repeats=1)
+seed <- 3
+metric <- "Accuracy"
+set.seed(seed)
+mtry <- sqrt(ncol(x))
+tunegrid <- expand.grid(.mtry=mtry)
+
+rf_default <- randomForest(as.factor(y_train_m) ~ .,  data=x_train_m,  method="rf", metric=metric, tuneGrid=tunegrid, trControl=control)
+print(rf_default)
+
+
+
+
+#Call:
+ #randomForest(formula = as.factor(y_train_m) ~ ., data = x_train_m,      method = "rf", metric = metric, tuneGrid = tunegrid, trControl = control) 
+#               Type of random forest: classification
+ #                    Number of trees: 500
+#No. of variables tried at each split: 16
+
+# OOB estimate of  error rate: 22.47%
+#Confusion matrix:
+#       0 1 class.error
+#0 105550 0           0
+#1  30590 0           1
+
+#(TP+TN)/(TP+TN+FP+FN) 
+
+print(rf_default)
+
+
+# Predicting response variable
+rf_default_predict = predict(rf_default, x_test_m)
+
+
+RF_PREDICT <-as.data.frame(rf_default_predict )
+y_test<-as.data.frame(y_test)
+
+
+table(RF_PREDICT,y_test) # test$target
+mean(RF_PREDICT==y_test) # 0.771053 test accuracy  of test 
+
+
+
+
+
+
+y_test<-as.data.frame(y_test)
+#OOB error rate on the training data.
+mean( predict(rf_default, x_train_m) != y_train_m) #0.2246952
+
+
+
+#Error rate on the test dat
+mean( predict(rf_default, x_test_m) != y_test_m) #0.228947
+
+
+```
+
+
