@@ -1,0 +1,89 @@
+
+
+# Login to SQL Database
+```{r message=FALSE, warning=FALSE}
+library(DBI)
+library(RJDBC)
+library(odbc)
+
+options(scipen = 9999)
+con <- dbConnect(odbc::odbc(), dsn='OracleCon', UID='FB006680', PWD='agWCcwP_50', encoding = 'ISO-8859-1')
+
+```
+
+
+# Get NPTB Scored Data (Update working directory!)
+```{r warning=FALSE}
+
+# UPDATE WORKING DIRECTORY FIRST!
+
+setwd("C:/Users/FB006680/Desktop/Fibabank_Propensity/propensity_results/20200107_1048")
+
+NPTB_GPL <- read.csv2("20200106_1433_target_gpl_satis_model.pkl_propensity.csv", sep = ",")
+
+```
+
+
+
+
+
+```{r}
+names(NPTB_GPL)[2]<-paste("GPL_PROPENSITY")
+NPTB_GPL$GPL_PROPENSITY <-  as.character(NPTB_GPL$GPL_PROPENSITY)
+
+```
+
+
+```{r}
+names(NPTB_GPL)[2]<-paste("GPL_PROPENSITY")
+NPTB_GPL$GPL_PROPENSITY <-  round(as.numeric(as.character(NPTB_GPL$GPL_PROPENSITY)), 3)
+
+```
+
+
+
+```{sql connection=con}
+
+DROP TABLE "NPTB_GPL"
+
+```
+
+
+```{r}
+start_time <- Sys.time()
+dbWriteTable(con, "NPTB_GPL", NPTB_GPL) # gpl
+end_time <- Sys.time()
+end_time - start_time
+```
+
+
+
+
+```{sql connection=con}
+
+DELETE FROM XDWH.NPTB_GPL_SCORE
+
+```
+
+
+
+
+```{sql connection=con}
+
+INSERT  INTO xdwh.nptb_gpl_score
+(
+select * from "NPTB_GPL"
+)
+
+```
+
+
+
+
+
+
+
+
+
+
+
